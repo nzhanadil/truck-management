@@ -31,9 +31,12 @@ const Navbar = () => {
 
   return (
     <div>
-      {!isOpen && <IconButton className='absolute left-4 top-4' onClick={() => setIsOpen(true)}>
-        <MenuIcon />
-      </IconButton>}
+      {!isOpen && <div className='fixed top-3 left-3 rounded-full bg-teal-900'>
+        <IconButton onClick={() => setIsOpen(true)}>
+          <MenuIcon className='text-white' />
+        </IconButton>
+      </div>
+      }
       {isOpen && <div className='sm:w-full md:w-64 relative border-2 border-teal-900 h-[100vh]'>
       
         <div className='relative text-white bg-teal-900 p-3 w-full flex justify-between'>
@@ -59,6 +62,8 @@ const Navbar = () => {
             </Link>
           ))}
         </div>
+
+        {/* user logo and user info will be here */}
       </div>}
     </div>
   )
