@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import { IconButton } from '@mui/material';
 
 const Navbar = () => {
+  const {pathname} = useLocation()
   const [isOpen, setIsOpen] = useState(true)
-  const [activeMenu, setActiveMenu] = useState('')
+  const [activeMenu, setActiveMenu] = useState(pathname.split("/")[1])
   const [screenSize, setScreenSize] = useState(undefined)
 
   useEffect(() => {
@@ -22,12 +23,12 @@ const Navbar = () => {
   }, [screenSize])
 
   const handleClick = (menuOption) => {
-    setActiveMenu(menuOption)
+    setActiveMenu(menuOption.toLowerCase())
     if(screenSize<=767) setIsOpen(false)
   }
 
-
   const menuOptions = ['Dashboard', 'Management', 'Drivers', 'Trucks', 'Trailers']
+
   return (
     <div>
       {!isOpen && <IconButton className='absolute left-4 top-4' onClick={() => setIsOpen(true)}>
@@ -50,9 +51,10 @@ const Navbar = () => {
           {menuOptions.map((menuOption, index) => (
             <Link 
               to={`/${menuOption.toLowerCase()}`}
-              className={`${activeMenu===menuOption && 'bg-teal-900 text-white'} px-4 py-2 hover:bg-teal-700 hover:text-white hover:duration-150 rounded-lg`}
+              className={`${activeMenu===menuOption.toLowerCase() && 'bg-teal-900 text-white'} px-4 py-2 hover:bg-teal-700 hover:text-white hover:duration-150 rounded-lg`}
               onClick={() => handleClick(menuOption)}
             >
+              {/* Icons for each menu */}
               {menuOption}
             </Link>
           ))}
