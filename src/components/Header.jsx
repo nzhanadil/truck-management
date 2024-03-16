@@ -7,7 +7,7 @@ import SortIcon from '@mui/icons-material/Sort';
 const Header = ({title, searchText, setSearchText}) => {
 
   return (
-    <div className='p-6 bg-teal-900 flex pl-10 justify-between items-center'>
+    <div className='p-6 bg-teal-900 flex pl-10 justify-between items-center h-[10vh]'>
       <h1 className='font-bold text-2xl text-white mx-5'>{title}</h1>
 
       <div className='flex'>

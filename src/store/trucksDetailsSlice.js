@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+
+
 export const getVehicleDetails = createAsyncThunk('detail/getVehicleDetails', async vehicleId => {
   let response = await axios.get(`${BASE_URL}/vehicles/${vehicleId}`, {
     headers: {
