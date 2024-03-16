@@ -4,6 +4,9 @@ import { Controller, useForm } from 'react-hook-form'
 import EmailIcon from '@mui/icons-material/Email';
 import {zodResolver} from '@hookform/resolvers/zod'
 import {z} from 'zod'
+import { auth } from '../../services/firebase';
+import { sendPasswordResetEmail } from "firebase/auth";
+import { Link } from 'react-router-dom';
 
 const schema = z.object({
     email: z.string().email(),
@@ -18,19 +21,19 @@ const Reset = () => {
         formState: {errors, isSubmitting}
     } = useForm({resolver: zodResolver(schema)})
 
-    const onSubmit = async (data) => {
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            throw new Error()
-            setError("root", {
-                type: "success",
-                message: "Reset link sent to your email!"
+    const onSubmit = async ({email}) => {
+        sendPasswordResetEmail(auth, email)
+            .then(
+                setError("root", {
+                    type: "success",
+                    message: "Reset link sent to your email!"
+                })
+            ).catch(error => {
+                setError("root", {
+                    message: "Something went wrong, try again!"
+                })
             })
-        } catch(error) {
-            setError("root", {
-                message: "Something went wrong, try again!"
-            })
-        }
+        setTimeout(() => {setError("root", {message: ""})},1500)
     }
   return (
     <div className='m-auto mt-[15vh]'>
@@ -78,6 +81,12 @@ const Reset = () => {
         >
             Send Reset Link
         </button>
+
+        <div className='m-3 -mt-2 underline underline-offset-1'>
+            <Link to="/signin">
+                Back to Sign in
+            </Link>
+        </div>
 
       </form>
     </div>

@@ -14,6 +14,7 @@ function App() {
       <div className='w-[100vw] flex'>
         {/* <Navbar /> */}
         <Routes>
+          <Route index element={<SignIn />}/>
           <Route path='/signin' element={<SignIn />}/>
           <Route path='/reset' element={<Reset />}/>
           <Route path='/trucks' element={<Trucks />}/>

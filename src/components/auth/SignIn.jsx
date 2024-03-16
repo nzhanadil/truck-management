@@ -6,6 +6,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EmailIcon from '@mui/icons-material/Email';
 import {zodResolver} from '@hookform/resolvers/zod'
 import {z} from 'zod'
+import { auth } from '../../services/firebase';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Link } from 'react-router-dom';
 
 const schema = z.object({
     email: z.string().email(),
@@ -23,17 +26,16 @@ const SignIn = () => {
 
     const [showPassword, setShowPassword] = useState(false)
 
-    const onSubmit = async (data) => {
-        
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            throw new Error()
-            console.log(data)
-        } catch(error) {
-            setError("root", {
-                message: "Email or password is incorrect!"
+    const onSubmit = ({email, password}) => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user)
             })
-        }
+            .catch((error) => {
+                setError('root', {message: 'Email or password is not correct!'})
+            });
+        setTimeout(() => {setError("root", {message: ""})},1500)
     }
   return (
     <div className='m-auto mt-[15vh]'>
@@ -110,7 +112,15 @@ const SignIn = () => {
             Sign In
         </button>
 
+        <div className='m-3 -mt-2 underline underline-offset-1'>
+            <Link to="/reset">
+                Forgot Password?
+            </Link>
+        </div>
+
       </form>
+
+      
     </div>
   )
 }
