@@ -48,7 +48,7 @@ const Navbar = () => {
 
   return (
     <div>
-      {!isOpen && <div className='fixed top-3 left-3 rounded-full bg-teal-900'>
+      {!isOpen && <div className='fixed top-3 left-3 rounded-full bg-teal-900 z-10'>
         <IconButton onClick={() => setIsOpen(true)}>
           <MenuIcon className='text-white' />
         </IconButton>
@@ -71,6 +71,7 @@ const Navbar = () => {
             <div className='flex flex-col text-teal-900 text-lg p-3 gap-3'>
                 {menuOptions.map((menuOption, index) => (
                     <Link 
+                    key={menuOption}
                     to={`/${menuOption.toLowerCase()}`}
                     className={`${activeMenu===menuOption.toLowerCase() && 'bg-teal-900 text-white'} px-4 py-2 hover:bg-teal-700 hover:text-white hover:duration-150 rounded-lg`}
                     onClick={() => handleClick(menuOption)}

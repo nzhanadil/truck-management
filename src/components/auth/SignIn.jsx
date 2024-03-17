@@ -19,6 +19,7 @@ const schema = z.object({
 })
 
 const SignIn = () => {
+    // console.log(auth)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(true)
     const {
@@ -56,8 +57,8 @@ const SignIn = () => {
     }
   return (
     <>
-    {isLoading ? <Loading /> : 
-    <div className='m-auto mt-[15vh]'>
+    {false ? <Loading /> : 
+    <div className='m-auto mt-[15vh] bg-white drop-shadow-2xl'>
       <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 w-80 rounded-lg text-center'>
         <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
             <p className='font-bold mr-2'>TRUCK</p>

@@ -1,25 +1,17 @@
-// import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
-// const appSlice = createSlice({
-//   name: 'app',
-//   initialState: {
-//     activeMenu: null,
+const appSlice = createSlice({
+  name: 'app',
+  initialState: {
+    alert: null,
 
-//   },
-//   reducers: {
-//     todoAdded(state, action) {
-//       state.push({
-//         id: action.payload.id,
-//         text: action.payload.text,
-//         completed: false,
-//       })
-//     },
-//     todoToggled(state, action) {
-//       const todo = state.find((todo) => todo.id === action.payload)
-//       todo.completed = !todo.completed
-//     },
-//   },
-// })
+  },
+  reducers: {
+    setAlert: (state, action) => {
+        state.alert = action.payload
+    }
+  },
+})
 
-// export const { todoAdded, todoToggled } = appSlice.actions
-// export default appSlice.reducer
+export const { setAlert} = appSlice.actions
+export default appSlice.reducer
