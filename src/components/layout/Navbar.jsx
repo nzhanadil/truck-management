@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
-import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, IconButton } from '@mui/material';
+import { auth } from '../../services/firebase';
+import { signOut } from "firebase/auth";
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../../store/usersSlice';
 
 const Navbar = () => {
+  const {currentUser} = useSelector((store) => store.users)
+  const dispatch = useDispatch()
   const {pathname} = useLocation()
   const [isOpen, setIsOpen] = useState(true)
   const [activeMenu, setActiveMenu] = useState(pathname.split("/")[1])
@@ -26,6 +32,16 @@ const Navbar = () => {
   const handleClick = (menuOption) => {
     setActiveMenu(menuOption.toLowerCase())
     if(screenSize<=767) setIsOpen(false)
+  }
+
+  const handleSignOut = () => {
+    // if(confirm("Are you sure you want to log out?")){
+    // }
+    signOut(auth).then(() => {
+      dispatch(setUser(null))
+    }).catch((error) => {
+      console.log(error)
+    });
   }
 
   const menuOptions = ['Dashboard', 'Management', 'Drivers', 'Trucks', 'Trailers']
@@ -70,12 +86,13 @@ const Navbar = () => {
             <div className='flex'>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                 <div className='text-white ml-3'>
-                    <p className='font-bold'>Full Name</p>
-                    <p>Role</p>
+                    <p className='font-bold'>{`${currentUser.firstname} ${currentUser.lastname}`}</p>
+                    <p>{currentUser.role}</p>
                 </div>
             </div>
-            <IconButton>
-                <SettingsIcon className='text-white'/>
+
+            <IconButton onClick={handleSignOut}>
+                <LogoutIcon className='text-white'/>
             </IconButton>
         </div>
       </div>}

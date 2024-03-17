@@ -22,7 +22,7 @@ const Trucks = () => {
        {/* <Button onClick={() => dispatch(addNewTruck({color:'blue', vin:'bfbgbg', year:'2009'}))}>
           Add
         </Button> */}
-        {console.log(data)}
+        {/* {console.log(data)} */}
     </div>
   )
 }

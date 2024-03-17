@@ -6,9 +6,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EmailIcon from '@mui/icons-material/Email';
 import {zodResolver} from '@hookform/resolvers/zod'
 import {z} from 'zod'
-import { auth } from '../../services/firebase';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import db, { auth } from '../../services/firebase';
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../store/usersSlice';
+import Loading from '../layout/Loading';
 
 const schema = z.object({
     email: z.string().email(),
@@ -16,6 +19,8 @@ const schema = z.object({
 })
 
 const SignIn = () => {
+    const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(true)
     const {
         register,
         handleSubmit,
@@ -24,13 +29,24 @@ const SignIn = () => {
         formState: {errors, isSubmitting}
     } = useForm({resolver: zodResolver(schema)})
 
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            db.collection('users')
+                .doc(user.email)
+                .onSnapshot((snapshot) => {
+                    dispatch(setUser({id: user.uid, email: user.email, ...snapshot.data()}))})
+        } else {
+            dispatch(setUser(null))
+        }
+        if(isLoading) setIsLoading(false)
+      });
+
     const [showPassword, setShowPassword] = useState(false)
 
     const onSubmit = ({email, password}) => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user)
+                
             })
             .catch((error) => {
                 setError('root', {message: 'Email or password is not correct!'})
@@ -38,6 +54,8 @@ const SignIn = () => {
         setTimeout(() => {setError("root", {message: ""})},1500)
     }
   return (
+    <>
+    {isLoading && <Loading />}
     <div className='m-auto mt-[15vh]'>
       <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 w-80 rounded-lg text-center'>
         <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
@@ -122,6 +140,8 @@ const SignIn = () => {
 
       
     </div>
+    </>
+    
   )
 }
 
