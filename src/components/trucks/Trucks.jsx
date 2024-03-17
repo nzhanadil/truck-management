@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import TrucksList from './TrucksList'
-import Header from '../../components/Header'
+import Header from '../layout/Header'
 import { useDispatch, useSelector } from 'react-redux'
 import { addNewTruck, getTrucks, incrementByAmount, setSearchText } from '../../store/trucksSlice'
 import { Button } from '@mui/material'

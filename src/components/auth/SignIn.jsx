@@ -34,11 +34,12 @@ const SignIn = () => {
             db.collection('users')
                 .doc(user.email)
                 .onSnapshot((snapshot) => {
-                    dispatch(setUser({id: user.uid, email: user.email, ...snapshot.data()}))})
+                    dispatch(setUser({id: user.uid, email: user.email, ...snapshot.data()}))
+                    if(isLoading) setIsLoading(false)
+                })
         } else {
             dispatch(setUser(null))
         }
-        if(isLoading) setIsLoading(false)
       });
 
     const [showPassword, setShowPassword] = useState(false)
@@ -55,7 +56,7 @@ const SignIn = () => {
     }
   return (
     <>
-    {isLoading && <Loading />}
+    {isLoading ? <Loading /> : 
     <div className='m-auto mt-[15vh]'>
       <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 w-80 rounded-lg text-center'>
         <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
@@ -139,7 +140,7 @@ const SignIn = () => {
       </form>
 
       
-    </div>
+    </div>}
     </>
     
   )
