@@ -1,5 +1,5 @@
-import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import React from 'react'
+import { Checkbox, FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
@@ -44,21 +44,21 @@ const TruckDialog = () => {
     const {isOpen, type, data} = useSelector((store) => store.trucks.truckDialog)
 
     const initDialog = () => {
-
         if (type === 'edit' && data) {
             reset({ ...data });
         }
-        
-
         if (type === 'new') {
             reset({
             ...defaultValues,
             ...data
             });
         }
-        
     }
 
+    useEffect(() => {
+        initDialog()
+    }, [isOpen])
+        
     const {
         register,
         handleSubmit,
@@ -190,20 +190,24 @@ const TruckDialog = () => {
                         />
                     )}
                 />
-                <FormControl className='w-64' control={control} >
+                <FormControl>
                     <InputLabel id="status_label">Status</InputLabel>
-                    <Select
-                        labelId="status_label"
-                        label="Status"
-                        {...register('status')}
-                        className="w-64"
-                        required
-                    >
-                        <MenuItem value={"assigned"}>Assigned</MenuItem>
-                        <MenuItem value={"unassigned"}>Unassigned</MenuItem>
-                        <MenuItem value={"damaged"}>Damaged</MenuItem>
-                        <MenuItem value={"out of service"}>Out of Service</MenuItem>
-                    </Select>
+                    <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                labelId="status_label"
+                                label="Status"
+                                {...field}
+                            >
+                                <MenuItem value="assigned">Assigned</MenuItem>
+                                <MenuItem value="unassigned">Unassigned</MenuItem>
+                                <MenuItem value="damaged">Damaged</MenuItem>
+                                <MenuItem value="out of service">Out of Service</MenuItem>
+                            </Select>
+                        )}
+                    />
                 </FormControl>
               </div>
 
