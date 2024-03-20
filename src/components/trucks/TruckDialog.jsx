@@ -201,8 +201,7 @@ const TruckDialog = () => {
                                 label="Status"
                                 {...field}
                             >
-                                <MenuItem value="assigned">Assigned</MenuItem>
-                                <MenuItem value="unassigned">Unassigned</MenuItem>
+                                <MenuItem value="assigned">Active</MenuItem>
                                 <MenuItem value="damaged">Damaged</MenuItem>
                                 <MenuItem value="out of service">Out of Service</MenuItem>
                             </Select>
