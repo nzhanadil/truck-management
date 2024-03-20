@@ -1,37 +1,54 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
+import { useDispatch, useSelector } from 'react-redux';
+import { openEditTruckDialog, openNewTruckDialog } from '../../store/trucksSlice';
 
 const TrucksList = () => {
-    const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },  
-        { field: 'make', headerName: 'Make', width: 130 },
-        { field: 'model', headerName: 'Model', width: 130 },
-        { field: 'vin', headerName: 'VIN', width: 130 },
-        { field: 'status', headerName: 'Status', width: 130 },
-        { field: 'mileage', headerName: 'Mileage', width: 130 },
-        { field: 'year', headerName: 'Year', width: 130 },
-        { field: 'color', headerName: 'Color', width: 130 }
-    ];
+  const dispatch = useDispatch()
+  const {data, searchText} = useSelector((state) => state.trucks)
+  const [filteredData, setFilteredData] = useState([])
 
-    const rows = [
-        { id: 1, make: 'BMW', model: 'X5', vin: "NJKJ3432435", status: "Active", mileage: 1234124, year: 2020, color: 'blue' },
-        { id: 2, make: 'vffg', model: 'X5', vin: "NJKJ3432435", status: "Active", mileage: 1234124, year: 2020, color: 'blue' },
-        { id: 3, make: 'fdvf', model: 'X5', vin: "NJKJ3432435", status: "Active", mileage: 1234124, year: 2020, color: 'blue' },
-        { id: 4, make: 'BMvfdvfW', model: 'X5', vin: "NJKJ3432435", status: "Active", mileage: 1234124, year: 2020, color: 'blue' },
-    ];
+  useEffect(() => {
+    const getFilteredArray = (data, searchText) => {
+      if(searchText.length === 0) return data
+
+      return data.filter(truck => truck.make.concat(truck.model).toLowerCase().includes(searchText))
+    }
+
+    if(data) {
+      setFilteredData(getFilteredArray(data, searchText))
+    }
+
+  }, [data, searchText])
+
+  const columns = [
+      { field: 'id', headerName: 'ID', minWidth: 100, flex: 1 },  
+      { field: 'make', headerName: 'Make', minWidth: 100 , flex: 1 },
+      { field: 'model', headerName: 'Model', minWidth: 100, flex: 1} ,
+      { field: 'vin', headerName: 'VIN', minWidth: 100, flex: 1 },
+      { field: 'status', headerName: 'Status', minWidth: 100, flex: 1 },
+      { field: 'mileage', headerName: 'Mileage', minWidth: 100, flex: 1 },
+      { field: 'year', headerName: 'Year', minWidth: 100 , flex: 1 },
+      { field: 'color', headerName: 'Color', minWidth: 100, flex: 1 },
+      { field: 'plate_number', headerName: 'Plate Number', minWidth: 100, flex: 1 }
+  ];
+
 
   return (
-    <div style={{ height: '90vh', width: '100%' }}>
+    <div style={{ height: '90vh', width: '100%' }} className='px-5'>
       <DataGrid
-        rows={rows}
+        rows={filteredData}
         columns={columns}
+        sx={{ '&, [class^=MuiDataGrid]': { border: 'none' } }}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
+            paginationModel: { page: 0, pageSize: 10 },
           },
         }}
         pageSizeOptions={[5, 10, 15, 20, 25, 30]}
-        checkboxSelection
+        disableColumnMenu={true}
+        rowSelection={false}
+        onRowClick={(params) => dispatch(openEditTruckDialog(params.row))}
       />
     </div>
   )

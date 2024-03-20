@@ -6,13 +6,18 @@ const StatusAlert = () => {
     const dispatch = useDispatch()
     const {alert} = useSelector((store) => store.app)
 
+    const change = () => {
+      setTimeout(() => {
+        dispatch(setAlert(null))
+      }, 1500)
+    }
+
   return (
-    <>{alert && <div className={`${alert.type === 'success' ? 'bg-green-500' : 'bg-red-500'} z-100 py-2 px-4 fixed bottom-2 right-2 rounded-lg`}>
+    <>{alert && <div className={`${alert.type === 'success' ? 'bg-green-500' : 'bg-red-500'} z-50 py-2 px-4 fixed bottom-2 right-2 rounded-lg`}>
         {alert.message}
-        {setTimeout(() => {
-            dispatch(setAlert(null))
-        }, 1500)}
-    </div>}</>
+        {change()}
+    </div>}
+    </>
   )
 }
 

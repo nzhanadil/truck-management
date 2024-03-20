@@ -136,7 +136,7 @@ const UserModal = () => {
                       <TextField
                       {...register('phone_number')}
                       className="mb-2 w-64"
-                      type="string"
+                      type="text"
                       label="Phone number"
                       error={!!errors.phone_number}
                       helperText={errors?.phone_number?.message}

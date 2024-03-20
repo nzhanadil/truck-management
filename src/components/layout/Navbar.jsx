@@ -55,7 +55,7 @@ const Navbar = () => {
       </div>
       }
       {isOpen && 
-      <div className={`${screenSize <= 767 ? 'w-[100vw]' : 'w-64'} relative border-2 border-teal-900 h-[100vh] flex flex-col justify-between`}>
+      <div className='xs:w-[100vw] md:w-64 relative border-2 border-teal-900 h-[100vh] flex flex-col justify-between'>
         <div>
             <div className='relative text-white bg-teal-900 p-3 w-full flex justify-between'>
                 <Link to="/" className='text-2xl' onClick={() => handleClick('')}>

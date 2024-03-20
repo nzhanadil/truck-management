@@ -1,11 +1,61 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import db from '../services/firebase';
+import { doc, updateDoc, setDoc, deleteDoc, collection, getDocs, getDoc} from 'firebase/firestore'
 
+export const getTrucks = createAsyncThunk(
+  'trucks/getTruck', 
+  async () => {
+    const querySnapshot = await getDocs(collection(db, 'trucks'));
+    const trucks = querySnapshot.docs.map(doc => doc.data())
+    return trucks;
+  }
+)
+
+export const addTruck = createAsyncThunk(
+  'trucks/addTruck', 
+  async (truck) => {
+    const truckRef = doc(db, 'trucks', truck.id);
+    const truckDoc = await getDoc(truckRef);
+    if (truckDoc.exists()) return 'failed'
+    await setDoc(truckRef, truck);
+    return truck;
+  }
+);
+
+export const deleteTruck = createAsyncThunk(
+  'trucks/deleteTruck', 
+  async ( id ) => {
+    await deleteDoc(doc(db, 'trucks', id))
+    return id
+  }
+)
+
+export const deleteAllTrucks = createAsyncThunk(
+  'trucks/deleteAllTrucks', 
+  async ( id ) => {
+    const trucks = await  getDocs(collection(db, 'trucks'));
+    for(let truck of trucks ){
+      await deleteDoc(doc(db, 'trucks', truck.id))
+    }
+    return []
+  }
+)
+
+export const updateTruck = createAsyncThunk(
+  'trucks/updateTruck', 
+  async ( updatedTruck ) => {
+    await updateDoc(doc(db, 'trucks', updatedTruck.id), updatedTruck)
+    return updatedTruck
+  }
+)
 const initialState = {
   searchText: '',
-  truckDialog: false,
+  truckDialog: {
+    type: '',
+    isOpen: false,
+    data: null
+  },
   data: [],
-  value: 0
 }
 
 export const trucksSlice = createSlice({
@@ -13,27 +63,63 @@ export const trucksSlice = createSlice({
   initialState,
   reducers: {
     setSearchText: (state, action) => {
-      state.searchText = action.payload.message;
+      state.searchText = action.payload.trim();
     },
-    getTrucks: (state) => {
-      const dataFromFirebase = []
-      db.collection('trucks').onSnapshot((snapshot) => {
-          state.data = snapshot.docs.map(doc => ({
-            ...doc.data()
-          }))
-        })        
-    
+    openNewTruckDialog: (state, action) => {
+      state.truckDialog = {
+        type: 'new',
+        isOpen: true,
+        data: null
+      }
     },
-    addNewTruck: (state, action) => {
-      db.collection('trucks').add(action.payload)
+    closeNewTruckDialog: (state, action) => {
+      state.truckDialog = {
+        type: 'new',
+        isOpen: false,
+        data: null
+      }
     },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload
+    openEditTruckDialog: (state, action) => {
+      state.truckDialog = {
+        type: 'edit',
+        isOpen: true,
+        data: action.payload
+      }
     },
-  },
+    closeEditTruckDialog: (state, action) => {
+      state.truckDialog = {
+        type: 'edit',
+        isOpen: false,
+        data: null
+      }
+    }
+  }, extraReducers: builder => {
+    builder
+      .addCase(getTrucks.fulfilled, (state, action) => {
+        state.data = action.payload
+      })
+      .addCase(addTruck.fulfilled, (state, action) => {
+        if(action.payload !== 'failed') state.data.push(action.payload)
+      })
+      .addCase(deleteTruck.fulfilled, (state, action) => {
+        state.data = state.data.filter(truck => truck.id !== action.payload)
+      })
+      .addCase(deleteAllTrucks.fulfilled, (state, action) => {
+        state.data = action.payload
+      })
+      .addCase(updateTruck.fulfilled, (state, action) => {
+        let index = state.data.findIndex(truck => truck.id === action.payload.id)
+        state.data[index] = action.payload
+      })
+  }
 })
 
-// Action creators are generated for each case reducer function
-export const { setSearchText, getTrucks, addNewTruck, incrementByAmount } = trucksSlice.actions
+export const { 
+  setSearchText, 
+  openNewTruckDialog, 
+  closeNewTruckDialog, 
+  openEditTruckDialog, 
+  closeEditTruckDialog
+} = trucksSlice.actions
 
 export default trucksSlice.reducer
