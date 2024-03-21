@@ -72,9 +72,9 @@ export const trucksSlice = createSlice({
         data: null
       }
     },
-    closeNewTruckDialog: (state, action) => {
+    closeTruckDialog: (state, action) => {
       state.truckDialog = {
-        type: 'new',
+        type: '',
         isOpen: false,
         data: null
       }
@@ -84,13 +84,6 @@ export const trucksSlice = createSlice({
         type: 'edit',
         isOpen: true,
         data: action.payload
-      }
-    },
-    closeEditTruckDialog: (state, action) => {
-      state.truckDialog = {
-        type: 'edit',
-        isOpen: false,
-        data: null
       }
     }
   }, extraReducers: builder => {
@@ -117,9 +110,8 @@ export const trucksSlice = createSlice({
 export const { 
   setSearchText, 
   openNewTruckDialog, 
-  closeNewTruckDialog, 
+  closeTruckDialog, 
   openEditTruckDialog, 
-  closeEditTruckDialog
 } = trucksSlice.actions
 
 export default trucksSlice.reducer

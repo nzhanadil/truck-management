@@ -13,7 +13,7 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {z} from 'zod'
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../store/appSlice';
-import { addTruck, closeEditTruckDialog, closeNewTruckDialog, deleteTruck, updateTruck } from '../../store/trucksSlice';
+import { addTruck, closeTruckDialog, deleteTruck, updateTruck } from '../../store/trucksSlice';
 
 const schema = z.object({
     id: z.string().min(2, "Please enter truck id"),
@@ -72,19 +72,25 @@ const TruckDialog = () => {
         dispatch(deleteTruck(id))
         const message = 'Truck '+ id + ' deleted successfully!'
         dispatch(setAlert({type:'success', message: message}))
-        dispatch(closeEditTruckDialog())
+        dispatch(closeTruckDialog())
     }
 
     const onSubmit = async (data) => {
-        const res = await dispatch(addTruck(data))
-        if(res.payload === 'failed') {
-            setError('id', {message: 'This id is already taken!'})
-            setTimeout(() => {setError("id", {message: ""})},1500)
+        let message;
+        if(type === 'new') {
+            const res = await dispatch(addTruck(data))
+            if(res.payload === 'failed') {
+                setError('id', {message: 'This id is already taken!'})
+                setTimeout(() => {setError("id", {message: ""})},1500)
+            } else {
+                message = 'Truck '+ data.id + ' created successfully!'
+            }
         } else {
-            dispatch(closeNewTruckDialog())
-            const message = 'Truck '+ data.id + ' created successfully!'
-            dispatch(setAlert({type:'success', message: message}))
+            dispatch(updateTruck(data))
+            message = 'Truck '+ data.id + ' updated successfully!'
         }
+        dispatch(closeTruckDialog())
+        dispatch(setAlert({type:'success', message: message}))
     }
 
   return (
@@ -201,7 +207,7 @@ const TruckDialog = () => {
                                 label="Status"
                                 {...field}
                             >
-                                <MenuItem value="assigned">Active</MenuItem>
+                                <MenuItem value="active">Active</MenuItem>
                                 <MenuItem value="damaged">Damaged</MenuItem>
                                 <MenuItem value="out of service">Out of Service</MenuItem>
                             </Select>
@@ -314,23 +320,14 @@ const TruckDialog = () => {
                   type='submit'
                   className='bg-teal-900 text-white w-full py-2 rounded-lg hover:bg-teal-700'
               >
-                  Create {}
+                {type === 'new' ? 'Create' : 'Update'}
               </button>
               <button
-                    onClick={() => dispatch(closeNewTruckDialog())}
-                    className='border-2 text-teal-900 border-teal-900  w-full py-2 rounded-lg hover:bg-teal-900 hover:text-white'
+                    onClick={() => dispatch(closeTruckDialog())}
+                    className='border-2 text-teal-900 border-teal-900  w-full py-2 rounded-lg hover:bg-teal-700 hover:border-teal-700 hover:text-white'
               >
                   Cancel
               </button>
-
-              {type === 'edit' && 
-              <button
-                onClick={() => handleDelete(data.id)}
-                className='border-2 text-teal-900 border-teal-900  w-full py-2 rounded-lg hover:bg-teal-900 hover:text-white'
-                >
-                    Delete
-                </button>
-              }
           </div>        
         </form>
       </div>}
