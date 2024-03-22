@@ -1,26 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import db from '../services/firebase';
+import db, { auth } from '../services/firebase';
 import { doc, updateDoc, setDoc, deleteDoc, collection, getDocs, getDoc} from 'firebase/firestore'
 
 export const getUsers = createAsyncThunk(
   'users/getUsers', 
   async () => {
     const querySnapshot = await getDocs(collection(db, 'users'));
-    const trucks = querySnapshot.docs.map(doc => doc.data())
-    return trucks;
+    const users = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}))
+    return users;
   }
 )
 
 export const addUser = createAsyncThunk(
   'users/addUser', 
-  async (truck) => {
-    const truckRef = doc(db, 'users', truck.id);
-    const truckDoc = await getDoc(truckRef);
-    if (truckDoc.exists()) return 'failed'
-    await setDoc(truckRef, truck);
-    return truck;
+  async (user) => {
+    const userRef = doc(db, 'users', user.id);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists()) return 'failed'
+    await setDoc(userRef, user);
+    return user;
   }
 );
+
+export const assignTruck = createAsyncThunk(
+  
+)
 
 export const deleteUser = createAsyncThunk(
   'users/deleteUser', 
@@ -43,9 +47,9 @@ export const deleteAllUsers = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   'users/updateUser', 
-  async ( updatedTruck ) => {
-    await updateDoc(doc(db, 'users', updatedTruck.id), updatedTruck)
-    return updatedTruck
+  async ( updatedUser ) => {
+    await updateDoc(doc(db, 'users', updatedUser.id), updatedUser)
+    return updatedUser
   }
 )
 
@@ -76,28 +80,7 @@ export const usersSlice = createSlice({
     },
     setSearchText: (state, action) => {
       state.searchText = action.payload;
-    },
-    openNewTruckDialog: (state, action) => {
-      state.truckDialog = {
-        type: 'new',
-        isOpen: true,
-        data: null
-      }
-    },
-    closeTruckDialog: (state, action) => {
-      state.truckDialog = {
-        type: '',
-        isOpen: false,
-        data: null
-      }
-    },
-    openEditTruckDialog: (state, action) => {
-      state.truckDialog = {
-        type: 'edit',
-        isOpen: true,
-        data: action.payload
-      }
-    } 
+    }
   },
   extraReducers: builder => {
     builder
@@ -120,5 +103,5 @@ export const usersSlice = createSlice({
   }
 })
 
-export const { setUser, openUserModal, closeUserModal } = usersSlice.actions
+export const { setUser, openUserModal, closeUserModal, setSearchText } = usersSlice.actions
 export default usersSlice.reducer

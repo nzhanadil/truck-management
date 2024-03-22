@@ -19,7 +19,6 @@ const schema = z.object({
 })
 
 const SignIn = () => {
-    // console.log(auth)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(true)
     const {
@@ -36,7 +35,7 @@ const SignIn = () => {
                 .doc(user.email)
                 .onSnapshot((snapshot) => {
                     dispatch(setUser({id: user.uid, email: user.email, ...snapshot.data()}))
-                    if(isLoading) setIsLoading(false)
+                    // if(isLoading) setIsLoading(false)
                 })
         } else {
             dispatch(setUser(null))
@@ -48,7 +47,6 @@ const SignIn = () => {
     const onSubmit = ({email, password}) => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                
             })
             .catch((error) => {
                 setError('root', {message: 'Email or password is not correct!'})
@@ -58,8 +56,8 @@ const SignIn = () => {
   return (
     <>
     {false ? <Loading /> : 
-    <div className='m-auto mt-[15vh] bg-white drop-shadow-2xl'>
-      <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 w-80 rounded-lg text-center'>
+    <div className='w-full h-[100vh] flex items-center justify-center bg-gray-900 bg-opacity-40'>
+      <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 rounded-lg text-center w-80 bg-white drop-shadow-2xl'>
         <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
             <p className='font-bold mr-2'>TRUCK</p>
             <p>EAST</p>
@@ -132,9 +130,12 @@ const SignIn = () => {
             Sign In
         </button>
 
-        <div className='m-3 -mt-2 underline underline-offset-1'>
+        <div className='m-3 -mt-2 underline underline-offset-1 flex flex-col gap-1'>
+            <Link to="/register">
+                Create an account
+            </Link>
             <Link to="/reset">
-                Forgot Password?
+                Forgot Password
             </Link>
         </div>
 

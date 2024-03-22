@@ -36,8 +36,8 @@ const Reset = () => {
         setTimeout(() => {setError("root", {message: ""})},1500)
     }
   return (
-    <div className='m-auto mt-[15vh] bg-white drop-shadow-2xl'>
-      <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 w-80 rounded-lg text-center'>
+    <div className='w-full h-[100vh] flex items-center justify-center bg-gray-900 bg-opacity-40'>
+      <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 rounded-lg text-center w-80 bg-white drop-shadow-2xl'>
         <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
             <p className='font-bold mr-2'>TRUCK</p>
             <p>EAST</p>
