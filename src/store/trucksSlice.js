@@ -63,7 +63,7 @@ export const trucksSlice = createSlice({
   initialState,
   reducers: {
     setSearchText: (state, action) => {
-      state.searchText = action.payload.trim();
+      state.searchText = action.payload;
     },
     openNewTruckDialog: (state, action) => {
       state.truckDialog = {

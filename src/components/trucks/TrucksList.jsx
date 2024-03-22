@@ -57,8 +57,8 @@ const TrucksList = () => {
 
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
-      if(searchText.length === 0) return data
-      return data.filter(truck => truck.make.concat(truck.model).toLowerCase().includes(searchText))
+      if(searchText.trim().length === 0) return data
+      return data.filter(truck => (truck.id+" "+truck.make+" "+truck.model).toLowerCase().includes(searchText.trim()))
     }
     if(data) {
       setFilteredData(getFilteredArray(data, searchText))

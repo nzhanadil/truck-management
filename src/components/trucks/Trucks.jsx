@@ -6,10 +6,8 @@ import { getTrucks, openNewTruckDialog, setSearchText, updateTruck } from '../..
 import TruckDialog from './TruckDialog'
 
 const Trucks = () => {
-  const [searchText, setSearchText] = useState('')
-  const trucks = useSelector((state) => state.trucks)
+  const { searchText } = useSelector((store) => store.trucks)
   const dispatch = useDispatch()
-
 
   useEffect(() => {
     dispatch(getTrucks())
