@@ -44,11 +44,15 @@ export const deleteAllTrucks = createAsyncThunk(
 export const updateTruck = createAsyncThunk(
   'trucks/updateTruck', 
   async ( updatedTruck ) => {
-    const copy = await updateDoc(doc(db, 'trucks', updatedTruck.id), updatedTruck)
-    console.log(copy)
-    return updatedTruck
+    await updateDoc(doc(db, 'trucks', updatedTruck.id), updatedTruck)
+
+    const updatedDocSnapshot = await getDoc(doc(db, 'trucks', updatedTruck.id));
+    const updatedData = updatedDocSnapshot.data();
+    
+    return updatedData;
   }
 )
+
 const initialState = {
   searchText: '',
   truckDialog: {

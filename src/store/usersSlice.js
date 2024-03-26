@@ -46,7 +46,11 @@ export const updateUser = createAsyncThunk(
   'users/updateUser', 
   async ( updatedUser ) => {
     await updateDoc(doc(db, 'users', updatedUser.email), updatedUser)
-    return updatedUser
+
+    const updatedDocSnapshot = await getDoc(doc(db, 'users', updateUser.email));
+    const updatedData = updatedDocSnapshot.data();
+    
+    return updatedData;
   }
 )
 
@@ -59,21 +63,22 @@ export const getTrucksHistory = createAsyncThunk(
   }
 )
 
-export const assignTruck = createAsyncThunk(
-  'users/assignTruck', 
-  async (truckId, email) => {
-    const truckHistory = {startDate: getCurrentDate(), endDate: '', truck: truckId}
+export const assignTruckToUser = createAsyncThunk(
+  'users/assignTruckToUser', 
+  async ({truck, email}) => {
+    const truckHistory = {startDate: getCurrentDate(), endDate: '', truck: truck}
     const historyRef = doc(db, `users/${email}/trucksHistory`, getCurrentDate());
     await setDoc(historyRef, truckHistory);
     return truckHistory;
   }
 );
 
-export const unassignTruck = createAsyncThunk(
-  'users/unassignTruck', 
-  async ( updatedTruckHistory, email ) => {
-    await updateDoc(doc(db, `users/${email}/trucksHistory`, updatedTruckHistory.startDate), updatedTruckHistory)
-    return updatedTruckHistory
+export const unassignTruckFromUser = createAsyncThunk(
+  'users/unassignTruckFromUser', 
+  async ( updatedHistory, email ) => {
+    updateUser({email, truck: ''})
+    await updateDoc(doc(db, `users/${email}/trucksHistory`, updatedHistory.startDate), {updatedHistory, endDate: getCurrentDate()})
+    return updatedHistory
   }
 )
 
@@ -123,6 +128,15 @@ export const usersSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         let index = state.data.findIndex(user => user.email === action.payload.email)
         state.data[index] = action.payload
+      })
+      .addCase(getTrucksHistory.fulfilled, (state, action) => {
+        console.log(action.payload)
+      })
+      .addCase(assignTruckToUser.fulfilled, (state, action) => {
+        console.log(action.payload)
+      })
+      .addCase(unassignTruckFromUser.fulfilled, (state, action) => {
+        console.log(action.payload)
       })
   }
 })

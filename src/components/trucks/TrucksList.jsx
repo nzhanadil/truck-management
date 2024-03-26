@@ -10,7 +10,7 @@ import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
 import { setAlert } from '../../store/appSlice';
 import AssignPopup from '../layout/AssignPopup';
-import { assignTruck, updateUser } from '../../store/usersSlice';
+import { assignTruckToUser, updateUser } from '../../store/usersSlice';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
@@ -51,9 +51,9 @@ const TrucksList = () => {
   const handleAssign = ({response, value}) => {
     setAssignMessage('')
     if(response) {
-      dispatch(updateUser({email: value, truck: selectedRow.id}))
-      dispatch(assignTruck({email: value, truck: selectedRow.id}))
       dispatch(updateTruck({id: selectedRow.id, status: 'assigned'}))
+      dispatch(updateUser({email: value, truck: selectedRow.id}))
+      dispatch(assignTruckToUser({email: value, truck: selectedRow.id}))
       const message = 'Truck '+selectedRow.id+' is successfully assigned to driver!'
       dispatch(setAlert({type: 'success', message: message}))
     }
