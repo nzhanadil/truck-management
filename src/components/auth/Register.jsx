@@ -57,7 +57,7 @@ const Register = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const role = register_code === 'driver234' ? 'driver' : register_code === 'manager234' ? 'manager' : 'admin'
-                db.collection('users').doc(email).set({email, firstname, lastname, phone_number, role})
+                db.collection('users').doc(email).set({email, firstname, lastname, phone_number, role, truck: '', trailer: ''})
             })
             .catch((error) => {
                 setError('email', {message: 'Email is already taken!'})

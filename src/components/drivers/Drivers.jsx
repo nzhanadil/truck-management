@@ -6,12 +6,12 @@ import DriverDialog from './DriverDialog'
 import { getUsers, setSearchText } from '../../store/usersSlice'
 
 const Drivers = () => {
-  const { searchText } = useSelector((store) => store.users)
+  const { searchText, data } = useSelector((store) => store.users)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getUsers())
+    dispatch(getUsers()) 
   }, [])
 
   return (

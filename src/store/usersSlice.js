@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import db, { auth } from '../services/firebase';
 import { doc, updateDoc, setDoc, deleteDoc, collection, getDocs, getDoc} from 'firebase/firestore'
+import { getCurrentDate } from '../utils/HelperFunctions';
 
 export const getUsers = createAsyncThunk(
   'users/getUsers', 
@@ -21,10 +22,6 @@ export const addUser = createAsyncThunk(
     return user;
   }
 );
-
-export const assignTruck = createAsyncThunk(
-  
-)
 
 export const deleteUser = createAsyncThunk(
   'users/deleteUser', 
@@ -48,8 +45,35 @@ export const deleteAllUsers = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'users/updateUser', 
   async ( updatedUser ) => {
-    await updateDoc(doc(db, 'users', updatedUser.id), updatedUser)
+    await updateDoc(doc(db, 'users', updatedUser.email), updatedUser)
     return updatedUser
+  }
+)
+
+export const getTrucksHistory = createAsyncThunk(
+  'users/getTrucksHistory', 
+  async (email) => {
+    const querySnapshot = await getDocs(collection(db, `users/${email}/trucksHistory`));
+    const trucksHistory = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}))
+    return trucksHistory;
+  }
+)
+
+export const assignTruck = createAsyncThunk(
+  'users/assignTruck', 
+  async (truckId, email) => {
+    const truckHistory = {startDate: getCurrentDate(), endDate: '', truck: truckId}
+    const historyRef = doc(db, `users/${email}/trucksHistory`, getCurrentDate());
+    await setDoc(historyRef, truckHistory);
+    return truckHistory;
+  }
+);
+
+export const unassignTruck = createAsyncThunk(
+  'users/unassignTruck', 
+  async ( updatedTruckHistory, email ) => {
+    await updateDoc(doc(db, `users/${email}/trucksHistory`, updatedTruckHistory.startDate), updatedTruckHistory)
+    return updatedTruckHistory
   }
 )
 
@@ -70,7 +94,7 @@ export const usersSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-        state.currentUser = action.payload
+      state.currentUser = action.payload
     },
     openUserModal: (state) => {
       state.userModal = true
@@ -97,11 +121,16 @@ export const usersSlice = createSlice({
         state.data = action.payload
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        let index = state.data.findIndex(truck => truck.id === action.payload.id)
+        let index = state.data.findIndex(user => user.email === action.payload.email)
         state.data[index] = action.payload
       })
   }
 })
 
-export const { setUser, openUserModal, closeUserModal, setSearchText } = usersSlice.actions
+export const { 
+  setUser, 
+  openUserModal, 
+  closeUserModal, 
+  setSearchText
+} = usersSlice.actions
 export default usersSlice.reducer

@@ -44,7 +44,8 @@ export const deleteAllTrucks = createAsyncThunk(
 export const updateTruck = createAsyncThunk(
   'trucks/updateTruck', 
   async ( updatedTruck ) => {
-    await updateDoc(doc(db, 'trucks', updatedTruck.id), updatedTruck)
+    const copy = await updateDoc(doc(db, 'trucks', updatedTruck.id), updatedTruck)
+    console.log(copy)
     return updatedTruck
   }
 )

@@ -5,10 +5,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { deleteTruck, openEditTruckDialog, openNewTruckDialog } from '../../store/trucksSlice';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
-import { setAlert } from '../../store/appSlice';
 
 const DriversList = () => {
   const dispatch = useDispatch()
@@ -24,28 +22,28 @@ const DriversList = () => {
   };
 
   const handleDelete = (response) => {
-    setConfirmationMessage('')
-    if(response) {
-      dispatch(deleteTruck(selectedRow.id))
-      const message = 'Truck '+selectedRow.id+' is successfully deleted!'
-      dispatch(setAlert({type: 'success', message: message}))
-    }
+    // setConfirmationMessage('')
+    // if(response) {
+    //   dispatch(deleteTruck(selectedRow.id))
+    //   const message = 'Truck '+selectedRow.id+' is successfully deleted!'
+    //   dispatch(setAlert({type: 'success', message: message}))
+    // }
   }
 
   const handleClosePopover = () => setAnchorEl(null);
 
   const openConfirmation = () => {
-    setConfirmationMessage('Are you sure you wanna delete it?')
+    // setConfirmationMessage('Are you sure you wanna delete it?')
     handleClosePopover();
   };
 
   const handleEdit = () => {
-    dispatch(openEditTruckDialog(selectedRow))
+    // dispatch(openEditTruckDialog(selectedRow))
     handleClosePopover();
   };
 
   const handleAssign = () => {
-    dispatch(openEditTruckDialog(selectedRow))
+    // dispatch(openEditTruckDialog(selectedRow))
     handleClosePopover();
   };
 
@@ -55,10 +53,14 @@ const DriversList = () => {
     handleClosePopover();
   };
 
+  const getDrivers = (data) => {
+    return data.filter(user => user.role==='driver')
+  }
+
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
-      if(searchText.trim().length === 0) return data.filter(user => user.role === 'driver')
-      return data.filter(user => user.role === 'driver' && (user.firstname+" "+user.lastname).toLowerCase().includes(searchText.trim()))
+      if(searchText.trim().length === 0) return getDrivers(data)
+      return getDrivers(data).filter(user => (user.firstname+" "+user.lastname).toLowerCase().includes(searchText.trim()))
     }
     if(data) {
       setFilteredData(getFilteredArray(data, searchText))
@@ -73,7 +75,6 @@ const DriversList = () => {
       { field: 'truck', headerName: 'Truck', minWidth: 100, flex: 1 },
       { field: 'trailer', headerName: 'Trailer', minWidth: 100, flex: 1 },
   ];
-
 
   return (
     <div style={{ height: '90vh', width: '100%' }} className='px-5'>

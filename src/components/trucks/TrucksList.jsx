@@ -5,10 +5,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { deleteTruck, openEditTruckDialog, openNewTruckDialog } from '../../store/trucksSlice';
-import { Autocomplete, Popover, TextField } from '@mui/material';
+import { deleteTruck, openEditTruckDialog, openNewTruckDialog, updateTruck } from '../../store/trucksSlice';
+import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
 import { setAlert } from '../../store/appSlice';
+import AssignPopup from '../layout/AssignPopup';
+import { assignTruck, updateUser } from '../../store/usersSlice';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
@@ -18,12 +20,14 @@ const TrucksList = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [value, setValue] = useState();
+  const [assignMessage, setAssignMessage] = useState('');
 
   const handleRowClick = (params, event) => {
     setSelectedRow(params.row);
     setAnchorEl(event.currentTarget);
   };
+
+  const handleClosePopover = () => setAnchorEl(null);
 
   const handleDelete = (response) => {
     setConfirmationMessage('')
@@ -33,8 +37,6 @@ const TrucksList = () => {
       dispatch(setAlert({type: 'success', message: message}))
     }
   }
-
-  const handleClosePopover = () => setAnchorEl(null);
 
   const openConfirmation = () => {
     setConfirmationMessage('Are you sure you wanna delete it?')
@@ -46,8 +48,19 @@ const TrucksList = () => {
     handleClosePopover();
   };
 
-  const handleAssign = () => {
-    dispatch(openEditTruckDialog(selectedRow))
+  const handleAssign = ({response, value}) => {
+    setAssignMessage('')
+    if(response) {
+      dispatch(updateUser({email: value, truck: selectedRow.id}))
+      dispatch(assignTruck({email: value, truck: selectedRow.id}))
+      dispatch(updateTruck({id: selectedRow.id, status: 'assigned'}))
+      const message = 'Truck '+selectedRow.id+' is successfully assigned to driver!'
+      dispatch(setAlert({type: 'success', message: message}))
+    }
+  };
+
+  const openAssign = () => {
+    setAssignMessage('Please select driver to assign')
     handleClosePopover();
   };
 
@@ -56,6 +69,11 @@ const TrucksList = () => {
     console.log("Previewing vehicle:", selectedRow);
     handleClosePopover();
   };
+
+  const getAvailableDrivers = () => {
+    if(users.currentUser.role === 'driver' && users.currentUser.truck==='') return [users.currentUser.email]
+    return users.data.filter(user => user.role === 'driver' && user.truck === '').map(user => user.email)
+  }
 
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
@@ -78,8 +96,6 @@ const TrucksList = () => {
       { field: 'color', headerName: 'Color', minWidth: 100, flex: 1 },
       { field: 'plate_number', headerName: 'Plate Number', minWidth: 100, flex: 1 }
   ];
-  console.log("++++++", value)
-
 
   return (
     <div style={{ height: '90vh', width: '100%' }} className='px-5'>
@@ -110,40 +126,32 @@ const TrucksList = () => {
           horizontal: 'right',
         }}
       >
-        <div className='flex flex-col gap-3 p-5'>
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            value={value}
-            onChange={(event, newValue) => setValue(newValue)}
-            options={users.data.map(user => user.firstname+" "+user.lastname)}
-            sx={{ width: 200 }}
-            renderInput={(params) => <TextField {...params} label="Assign"/>}
-          />
+        <div className='flex flex-col gap-3 p-5 w-44'>
           <button 
             onClick={handleEdit}
-            className='flex justify-between p-1 hover:bg-gray-200 rounded-sm'
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
           >
             <p>Edit</p>
             <EditIcon />
           </button>
           <button 
             onClick={openConfirmation}
-            className='flex justify-between p-1 hover:bg-gray-200 rounded-sm'
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
           >
             <p>Delete</p>
             <DeleteIcon />
           </button>
-          {/* <button 
-            onClick={handleAssign}
-            className='flex justify-between p-1 hover:bg-gray-200 rounded-sm'
+          <button 
+            onClick={openAssign}
+            disabled={selectedRow && (selectedRow.status === 'out of service' || selectedRow.status === 'assigned')}
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
           >
             <p>Assign</p>
             <AssignmentIndIcon />
-          </button> */}
+          </button>
           <button
             onClick={handlePreview}
-            className='flex justify-between p-1 hover:bg-gray-200 rounded-sm'
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
           >
             <p>Preview</p>
             <VisibilityIcon />
@@ -152,6 +160,8 @@ const TrucksList = () => {
       </Popover>
 
       { confirmationMessage && <ConfirmationPopup message={confirmationMessage} handleConfirm={handleDelete}/>}
+      { assignMessage && <AssignPopup message={assignMessage} handleConfirm={handleAssign} options={getAvailableDrivers()}/>}
+
     </div>
   )
 }

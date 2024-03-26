@@ -36,7 +36,7 @@ const defaultValues = {
     mileage: '',
     year: '',
     color: '',
-    plate_number: ''
+    plate_number: '',
   };
 
 const TruckDialog = () => {
