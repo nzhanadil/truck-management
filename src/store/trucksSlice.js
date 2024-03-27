@@ -17,8 +17,8 @@ export const addTruck = createAsyncThunk(
     const truckRef = doc(db, 'trucks', truck.id);
     const truckDoc = await getDoc(truckRef);
     if (truckDoc.exists()) return 'failed'
-    await setDoc(truckRef, truck);
-    return truck;
+    await setDoc(truckRef, {...truck, history: []});
+    return {...truck, history: []};
   }
 );
 
@@ -32,7 +32,7 @@ export const deleteTruck = createAsyncThunk(
 
 export const deleteAllTrucks = createAsyncThunk(
   'trucks/deleteAllTrucks', 
-  async ( id ) => {
+  async () => {
     const trucks = await  getDocs(collection(db, 'trucks'));
     for(let truck of trucks ){
       await deleteDoc(doc(db, 'trucks', truck.id))

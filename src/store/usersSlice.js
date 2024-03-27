@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import db, { auth } from '../services/firebase';
+import db from '../services/firebase';
 import { doc, updateDoc, setDoc, deleteDoc, collection, getDocs, getDoc} from 'firebase/firestore'
-import { getCurrentDate } from '../utils/HelperFunctions';
 
 export const getUsers = createAsyncThunk(
   'users/getUsers', 
@@ -14,10 +13,12 @@ export const getUsers = createAsyncThunk(
 
 export const addUser = createAsyncThunk(
   'users/addUser', 
-  async (user) => {
-    const userRef = doc(db, 'users', user.id);
+  async ({email, firstname, lastname, phone_number, register_code}) => {
+    const userRef = doc(db, 'users', email);
     const userDoc = await getDoc(userRef);
     if (userDoc.exists()) return 'failed'
+    const role = register_code === 'driver234' ? 'driver' : register_code === 'manager234' ? 'manager' : 'admin'
+    let user = {email, firstname, lastname, phone_number, role, truck: '', trailer: '', trucksHistory: [], trailersHistory: []}
     await setDoc(userRef, user);
     return user;
   }
@@ -33,7 +34,7 @@ export const deleteUser = createAsyncThunk(
 
 export const deleteAllUsers = createAsyncThunk(
   'users/deleteAllUsers', 
-  async ( id ) => {
+  async () => {
     const trucks = await  getDocs(collection(db, 'users'));
     for(let truck of trucks ){
       await deleteDoc(doc(db, 'users', truck.id))
@@ -51,34 +52,6 @@ export const updateUser = createAsyncThunk(
     const updatedData = updatedDocSnapshot.data();
     
     return updatedData;
-  }
-)
-
-export const getTrucksHistory = createAsyncThunk(
-  'users/getTrucksHistory', 
-  async (email) => {
-    const querySnapshot = await getDocs(collection(db, `users/${email}/trucksHistory`));
-    const trucksHistory = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}))
-    return trucksHistory;
-  }
-)
-
-export const assignTruckToUser = createAsyncThunk(
-  'users/assignTruckToUser', 
-  async ({truck, email}) => {
-    const truckHistory = {startDate: getCurrentDate(), endDate: '', truck: truck}
-    const historyRef = doc(db, `users/${email}/trucksHistory`, getCurrentDate());
-    await setDoc(historyRef, truckHistory);
-    return truckHistory;
-  }
-);
-
-export const unassignTruckFromUser = createAsyncThunk(
-  'users/unassignTruckFromUser', 
-  async ( updatedHistory, email ) => {
-    updateUser({email, truck: ''})
-    await updateDoc(doc(db, `users/${email}/trucksHistory`, updatedHistory.startDate), {updatedHistory, endDate: getCurrentDate()})
-    return updatedHistory
   }
 )
 
@@ -128,15 +101,6 @@ export const usersSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         let index = state.data.findIndex(user => user.email === action.payload.email)
         state.data[index] = action.payload
-      })
-      .addCase(getTrucksHistory.fulfilled, (state, action) => {
-        console.log(action.payload)
-      })
-      .addCase(assignTruckToUser.fulfilled, (state, action) => {
-        console.log(action.payload)
-      })
-      .addCase(unassignTruckFromUser.fulfilled, (state, action) => {
-        console.log(action.payload)
       })
   }
 })

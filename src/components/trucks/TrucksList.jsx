@@ -10,7 +10,8 @@ import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
 import { setAlert } from '../../store/appSlice';
 import AssignPopup from '../layout/AssignPopup';
-import { assignTruckToUser, updateUser } from '../../store/usersSlice';
+import { addUser, assignTruckToUser, updateUser } from '../../store/usersSlice';
+import { getCurrentDate } from '../../utils/HelperFunctions';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
@@ -48,12 +49,21 @@ const TrucksList = () => {
     handleClosePopover();
   };
 
+  const getTruck = (id) => {
+    return data.filter(truck => truck.id === id)[0]
+  }
+
+  const getUser = (email) => {
+    return users.data.filter(user => user.email === email)[0]
+  }
+
   const handleAssign = ({response, value}) => {
     setAssignMessage('')
     if(response) {
-      dispatch(updateTruck({id: selectedRow.id, status: 'assigned'}))
-      dispatch(updateUser({email: value, truck: selectedRow.id}))
-      dispatch(assignTruckToUser({email: value, truck: selectedRow.id}))
+      const trucksHistory = [...getUser(value).trucksHistory, {startDate: getCurrentDate(), truck: selectedRow.id, endDate: ''}]
+      const truckHistory = [...getTruck(selectedRow.id).history, {startDate: getCurrentDate(), user: value, endDate: '', images: []}]
+      dispatch(updateUser({email: value, truck: selectedRow.id, trucksHistory}))
+      dispatch(updateTruck({id: selectedRow.id, status: 'assigned', history: truckHistory}))
       const message = 'Truck '+selectedRow.id+' is successfully assigned to driver!'
       dispatch(setAlert({type: 'success', message: message}))
     }

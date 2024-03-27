@@ -11,7 +11,7 @@ import {z} from 'zod'
 import db, { auth } from '../../services/firebase';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '../../store/usersSlice';
+import { addUser, setUser } from '../../store/usersSlice';
 import { Link } from 'react-router-dom';
 
 const schema = z.object({
@@ -53,11 +53,10 @@ const Register = () => {
         }
       });
 
-    const onSubmit = ({email, password, firstname, lastname, phone_number, register_code}) => {
-        createUserWithEmailAndPassword(auth, email, password)
+    const onSubmit = (data) => {
+        createUserWithEmailAndPassword(auth, data.email, data.password)
             .then((userCredential) => {
-                const role = register_code === 'driver234' ? 'driver' : register_code === 'manager234' ? 'manager' : 'admin'
-                db.collection('users').doc(email).set({email, firstname, lastname, phone_number, role, truck: '', trailer: ''})
+                dispatch(addUser(data))
             })
             .catch((error) => {
                 setError('email', {message: 'Email is already taken!'})
