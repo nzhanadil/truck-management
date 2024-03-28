@@ -11,3 +11,16 @@ export const getCurrentDate = () => {
 
     return formattedDate;
 }
+
+export const convertImagesToBase64 = (files) => {
+    let response = []
+    for(let i = 0; i< files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.addEventListener('load', ()=>{
+            response.push(reader.result)
+        })
+        reader.readAsDataURL(file);
+    }
+    return response; 
+}

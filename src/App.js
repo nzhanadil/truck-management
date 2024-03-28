@@ -4,11 +4,12 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Trucks from './components/trucks/Trucks';
 import SignIn from './components/auth/SignIn';
 import Reset from './components/auth/Reset';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Management from './components/management/Management';
 import StatusAlert from './components/layout/StatusAlert';
 import Drivers from './components/drivers/Drivers';
 import Register from './components/auth/Register';
+import AssignDialog from './components/layout/AssignDialog';
 
 function App() {
   const user = useSelector((store) => store.users)
@@ -19,6 +20,7 @@ function App() {
       {
         user.currentUser ? 
         <BrowserRouter>
+          <AssignDialog />
           <StatusAlert />
           <Navbar/>
           <Routes>

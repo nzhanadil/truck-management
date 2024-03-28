@@ -8,10 +8,11 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { deleteTruck, openEditTruckDialog, openNewTruckDialog, updateTruck } from '../../store/trucksSlice';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
-import { setAlert } from '../../store/appSlice';
-import AssignPopup from '../layout/AssignPopup';
+import { openTruckAssignDialog, setAlert } from '../../store/appSlice';
+import AssignDialog from '../layout/AssignDialog';
 import { addUser, assignTruckToUser, updateUser } from '../../store/usersSlice';
 import { getCurrentDate } from '../../utils/HelperFunctions';
+import UnassignPopup from '../layout/UnassignDialog';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
@@ -21,7 +22,7 @@ const TrucksList = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [assignMessage, setAssignMessage] = useState('');
+  const [isUnassignOpen, setIsUnassignOpen] = useState(false);
 
   const handleRowClick = (params, event) => {
     setSelectedRow(params.row);
@@ -49,28 +50,14 @@ const TrucksList = () => {
     handleClosePopover();
   };
 
-  const getTruck = (id) => {
-    return data.filter(truck => truck.id === id)[0]
-  }
-
-  const getUser = (email) => {
-    return users.data.filter(user => user.email === email)[0]
-  }
-
-  const handleAssign = ({response, value}) => {
-    setAssignMessage('')
-    if(response) {
-      const trucksHistory = [...getUser(value).trucksHistory, {startDate: getCurrentDate(), truck: selectedRow.id, endDate: ''}]
-      const truckHistory = [...getTruck(selectedRow.id).history, {startDate: getCurrentDate(), user: value, endDate: '', images: []}]
-      dispatch(updateUser({email: value, truck: selectedRow.id, trucksHistory}))
-      dispatch(updateTruck({id: selectedRow.id, status: 'assigned', history: truckHistory}))
-      const message = 'Truck '+selectedRow.id+' is successfully assigned to driver!'
-      dispatch(setAlert({type: 'success', message: message}))
-    }
+  const openAssign = () => {
+    dispatch(openTruckAssignDialog(selectedRow.id))
+    handleClosePopover();
   };
 
-  const openAssign = () => {
-    setAssignMessage('Please select driver to assign')
+  const openUnassign = () => {
+    // setIsUnassignOpen(true)
+    // dispatch(openTruckAssignDialog())
     handleClosePopover();
   };
 
@@ -79,11 +66,6 @@ const TrucksList = () => {
     console.log("Previewing vehicle:", selectedRow);
     handleClosePopover();
   };
-
-  const getAvailableDrivers = () => {
-    if(users.currentUser.role === 'driver' && users.currentUser.truck==='') return [users.currentUser.email]
-    return users.data.filter(user => user.role === 'driver' && user.truck === '').map(user => user.email)
-  }
 
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
@@ -170,8 +152,7 @@ const TrucksList = () => {
       </Popover>
 
       { confirmationMessage && <ConfirmationPopup message={confirmationMessage} handleConfirm={handleDelete}/>}
-      { assignMessage && <AssignPopup message={assignMessage} handleConfirm={handleAssign} options={getAvailableDrivers()}/>}
-
+      { isUnassignOpen && <UnassignPopup handleConfirm={handleUnassign} />}
     </div>
   )
 }
