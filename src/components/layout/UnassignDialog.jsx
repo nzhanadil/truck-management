@@ -1,6 +1,6 @@
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import React, { useEffect, useState } from 'react'
-import { convertImagesToBase64, getCurrentDate } from '../../utils/HelperFunctions';
+import { getCurrentDate, uploadImages } from '../../utils/HelperFunctions';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeUnassignDialog, setAlert } from '../../store/appSlice';
 import { updateUser } from '../../store/usersSlice';
@@ -13,9 +13,12 @@ const UnassignDialog = () => {
     const trailers = useSelector(store => store.trailers)
     const dispatch = useDispatch()
     const [images, setImages] = useState([])
+    let urls = []
+    
     const [error, setError ] = useState('')
 
     useEffect(() => {
+        urls = []
         setImages([])
     }, [isOpen])
 
@@ -30,15 +33,7 @@ const UnassignDialog = () => {
     const getTransportHistory = (id) => {
         const transport = (type === 'truck' ? trucks : trailers).data.filter(transport => transport.id === id)[0]
         const history = [...transport.history]
-
-        const lastHistory = {...history[history.length-1], endDate: getCurrentDate()}
-        convertImagesToBase64(images)
-            .then((response) => {
-                lastHistory.images = response
-                
-            })
-            .catch((error) => console.error(error));
-            console.log(lastHistory, "LASSTT")
+        const lastHistory = {...history[history.length-1], endDate: getCurrentDate(), images: urls}
         history[history.length - 1] = lastHistory
 
         return [...history]
@@ -46,27 +41,32 @@ const UnassignDialog = () => {
 
     const handleUnassign = () => {
         const transportHistory = getTransportHistory(id)
-        console.log(transportHistory[transportHistory.length-1], "IMAGES")
         const email = transportHistory[transportHistory.length-1].user
         const userHistory = getUserHistory(email)
 
         const updatedTransport = {id, status: 'active', history: [...transportHistory]}
+
         const updatedUser = {email}
         updatedUser[type] = ''
         updatedUser[type === 'truck' ? 'trucksHistory' : 'trailersHistory'] = userHistory
 
-        dispatch(closeUnassignDialog())
         dispatch(updateUser(updatedUser))
         // type === 'truck' ? dispatch(updateTruck(updatedTransport)) : dispatch(updateTrailer(updatedTransport))
-        type === 'truck' && dispatch(updateTruck(updatedTransport))
+        const clone = JSON.parse(JSON.stringify(updatedTransport));
+        type === 'truck' && dispatch(updateTruck(clone))
 
-        const message = `${type === 'truck' ? 'Truck' : 'Trailer'} ${id} is successfully assigned to ${email}!`
+        const message = `${type === 'truck' ? 'Truck' : 'Trailer'} ${id} is successfully unassigned from ${email}!`
         dispatch(setAlert({type: 'success', message: message}))
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+    
         if(images.length >= 10) {
+            dispatch(closeUnassignDialog())
+
+            urls = await uploadImages('trucks/vcvcddv', images)
+
             handleUnassign()
         } else {
             setError("Miniumum of 10 images required")

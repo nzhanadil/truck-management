@@ -1,3 +1,7 @@
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storageDb } from "../services/firebase";
+import { v4 } from "uuid";
+
 export const getCurrentDate = () => {
     const date = new Date();
     const yyyy = date.getFullYear();
@@ -12,44 +16,49 @@ export const getCurrentDate = () => {
     return formattedDate;
 }
 
-// export const convertImagesToBase64 = (files) => {
-//     let response = []
-//     for(let i = 0; i < files.length; i++) {
-//         const file = files[i];
-//         const reader = new FileReader();
-//         reader.addEventListener('load', ()=>{
-//             setTimeout(function() {
-//                 response.push(reader.result)
-//             }, 1000);
-//         })
-//         reader.readAsDataURL(file);
-//     }
-//     return response; 
-// }
+export const uploadImages = async (path, files) => {
 
-export const convertImagesToBase64 = (files) => {
-    return new Promise((resolve, reject) => {
-        let response = [];
-        let count = 0;
+    const promises = [];
+    for (let i = 0; i < files.length; i++) {
+        const image = files[i];
+        const imageRef = ref(storageDb, `${path}/${v4()}`);
+        const uploadTask = uploadBytesResumable(imageRef, image);
 
-        for(let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
+        promises.push(
+            new Promise((resolve, reject) => {
+                uploadTask.on(
+                    'state_changed',
+                    (snapshot) => {
+                        // Progress updates can be handled here if needed
+                    },
+                    (error) => {
+                        console.error(error);
+                        reject(error);
+                    },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref)
+                            .then((downloadURL) => {
+                                resolve(downloadURL);
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                                reject(error);
+                            });
+                    }
+                );
+            })
+        );
+    }
 
-            reader.addEventListener('load', () => {
-                response.push(reader.result);
-                count++;
+    try {
+        const downloadURLs = await Promise.all(promises);
+        return downloadURLs;
+    } catch (error) {
+        console.error('Failed to upload images:', error);
+        throw error;
+    }
+};
 
-                if (count === files.length) {
-                    resolve(response);
-                }
-            });
 
-            reader.addEventListener('error', (error) => {
-                reject(error);
-            });
 
-            reader.readAsDataURL(file);
-        }
-    });
-}
+
