@@ -12,15 +12,44 @@ export const getCurrentDate = () => {
     return formattedDate;
 }
 
+// export const convertImagesToBase64 = (files) => {
+//     let response = []
+//     for(let i = 0; i < files.length; i++) {
+//         const file = files[i];
+//         const reader = new FileReader();
+//         reader.addEventListener('load', ()=>{
+//             setTimeout(function() {
+//                 response.push(reader.result)
+//             }, 1000);
+//         })
+//         reader.readAsDataURL(file);
+//     }
+//     return response; 
+// }
+
 export const convertImagesToBase64 = (files) => {
-    let response = []
-    for(let i = 0; i< files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
-        reader.addEventListener('load', ()=>{
-            response.push(reader.result)
-        })
-        reader.readAsDataURL(file);
-    }
-    return response; 
+    return new Promise((resolve, reject) => {
+        let response = [];
+        let count = 0;
+
+        for(let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.addEventListener('load', () => {
+                response.push(reader.result);
+                count++;
+
+                if (count === files.length) {
+                    resolve(response);
+                }
+            });
+
+            reader.addEventListener('error', (error) => {
+                reject(error);
+            });
+
+            reader.readAsDataURL(file);
+        }
+    });
 }

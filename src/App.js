@@ -6,10 +6,9 @@ import SignIn from './components/auth/SignIn';
 import Reset from './components/auth/Reset';
 import { useSelector } from 'react-redux';
 import Management from './components/management/Management';
-import StatusAlert from './components/layout/StatusAlert';
 import Drivers from './components/drivers/Drivers';
 import Register from './components/auth/Register';
-import AssignDialog from './components/layout/AssignDialog';
+import { AssignDialog, StatusAlert, UnassignDialog } from './components/layout';
 
 function App() {
   const user = useSelector((store) => store.users)
@@ -22,6 +21,7 @@ function App() {
         <BrowserRouter>
           <AssignDialog />
           <StatusAlert />
+          <UnassignDialog />
           <Navbar/>
           <Routes>
             <Route path='/drivers' element={<Drivers />}/>

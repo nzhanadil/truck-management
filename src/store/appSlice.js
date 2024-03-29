@@ -18,7 +18,7 @@ const appSlice = createSlice({
       state.unassignDialog = {type: 'trailer', isOpen: true, id: action.payload}
     },
     closeUnassignDialog: (state) => {
-      state.as = {type: '', isOpen: false, id: ''}
+      state.unassignDialog = {type: '', isOpen: false, id: ''}
     },
     openTruckAssignDialog: (state, action) => {
       state.assignDialog = {type: 'truck', isOpen: true, id: action.payload}

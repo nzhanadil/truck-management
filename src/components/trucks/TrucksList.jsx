@@ -5,24 +5,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { deleteTruck, openEditTruckDialog, openNewTruckDialog, updateTruck } from '../../store/trucksSlice';
+import { deleteTruck, openEditTruckDialog } from '../../store/trucksSlice';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
-import { openTruckAssignDialog, setAlert } from '../../store/appSlice';
-import AssignDialog from '../layout/AssignDialog';
-import { addUser, assignTruckToUser, updateUser } from '../../store/usersSlice';
-import { getCurrentDate } from '../../utils/HelperFunctions';
-import UnassignPopup from '../layout/UnassignDialog';
+import { openTruckAssignDialog, openTruckUnassignDialog, setAlert } from '../../store/appSlice';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
   const {data, searchText} = useSelector((state) => state.trucks)
-  const users = useSelector((state) => state.users)
   const [filteredData, setFilteredData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmationMessage, setConfirmationMessage] = useState('');
-  const [isUnassignOpen, setIsUnassignOpen] = useState(false);
 
   const handleRowClick = (params, event) => {
     setSelectedRow(params.row);
@@ -56,8 +50,7 @@ const TrucksList = () => {
   };
 
   const openUnassign = () => {
-    // setIsUnassignOpen(true)
-    // dispatch(openTruckAssignDialog())
+    dispatch(openTruckUnassignDialog(selectedRow.id))
     handleClosePopover();
   };
 
@@ -141,6 +134,15 @@ const TrucksList = () => {
             <p>Assign</p>
             <AssignmentIndIcon />
           </button>
+          {selectedRow && selectedRow.status === 'assigned' && 
+          <button 
+            onClick={openUnassign}
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
+          >
+            <p>Unassign</p>
+            <AssignmentIndIcon />
+          </button>
+          }
           <button
             onClick={handlePreview}
             className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
@@ -152,7 +154,6 @@ const TrucksList = () => {
       </Popover>
 
       { confirmationMessage && <ConfirmationPopup message={confirmationMessage} handleConfirm={handleDelete}/>}
-      { isUnassignOpen && <UnassignPopup handleConfirm={handleUnassign} />}
     </div>
   )
 }
