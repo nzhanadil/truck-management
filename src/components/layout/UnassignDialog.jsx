@@ -65,7 +65,7 @@ const UnassignDialog = () => {
         if(images.length >= 10) {
             dispatch(closeUnassignDialog())
 
-            urls = await uploadImages('trucks/vcvcddv', images)
+            urls = await uploadImages(`${type}s/${id}`, images)
 
             handleUnassign()
         } else {
