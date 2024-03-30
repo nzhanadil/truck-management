@@ -1,46 +1,44 @@
 import './App.css';
 import Navbar from './components/layout/Navbar';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Trucks from './components/trucks/Trucks';
 import SignIn from './components/auth/SignIn';
 import Reset from './components/auth/Reset';
-import { useSelector } from 'react-redux';
 import Management from './components/management/Management';
 import Drivers from './components/drivers/Drivers';
 import Register from './components/auth/Register';
 import { AssignDialog, StatusAlert, UnassignDialog } from './components/layout';
+import Layout from './components/layout/Layout';
+import RequireAuth from './components/layout/RequireAuth';
+import Dashboard from './components/dashboard/Dashboard';
+import PageNotFound from './components/layout/PageNotFound';
 
-function App() {
-  const user = useSelector((store) => store.users)
-  
+function App() {  
   return (
-    <div className="App flex relative w-[100vw]">
-      {/* Fix issue of correctly showing right pages */}
-      {
-        user.currentUser ? 
-        <BrowserRouter>
-          <AssignDialog />
-          <StatusAlert />
-          <UnassignDialog />
-          <Navbar/>
-          <Routes>
-            <Route path='/drivers' element={<Drivers />}/>
-            <Route path='/trucks' element={<Trucks />}/>
-            <Route index element={<Trucks />}/>
-            <Route path='/management' element={<Management />}/>
-          </Routes>
-        </BrowserRouter>
-        :
-        <BrowserRouter>
-          <Routes>
-            <Route path='/register' element={<Register />} />
-            <Route path='/signin' element={<SignIn />} />
-            <Route path='/reset' element={<Reset />} />
-            <Route index element={<SignIn />} />
-          </Routes>
-        </BrowserRouter>
-      }
-    </div>
+    <Routes>
+      <Route path='/' element={<Layout />}>
+        {/* public routes */}
+        <Route path='/register' element={<Register />} />
+        <Route path='/signin' element={<SignIn />} />
+        <Route path='/reset' element={<Reset />} />
+
+        {/* protected routes */}
+        <Route element={<RequireAuth allowedRoles={['driver', 'manager', 'admin']}/>}>
+          <Route path='/' element={<Dashboard />}/>
+          <Route path='/dashboard' element={<Dashboard />}/>
+          <Route path='/trucks' element={<Trucks />}/>
+        </Route>
+        <Route element={<RequireAuth allowedRoles={['manager', 'admin']}/>}>
+          <Route path='/drivers' element={<Drivers />}/>
+        </Route>
+        <Route element={<RequireAuth allowedRoles={['admin']}/>}>
+          <Route path='/management' element={<Management />}/>
+        </Route>
+       
+        {/* catch all */}
+        <Route path='*' element={<PageNotFound />}/>
+      </Route>
+    </Routes>
   );
 }
 

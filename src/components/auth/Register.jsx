@@ -1,5 +1,5 @@
 import { InputAdornment, TextField } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
@@ -12,7 +12,8 @@ import db, { auth } from '../../services/firebase';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser, setUser } from '../../store/usersSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Loading from '../layout/Loading';
 
 const schema = z.object({
     firstname: z.string().min(2, "Please enter valid firstname"),
@@ -31,8 +32,10 @@ const schema = z.object({
 })
 
 const Register = () => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
-    const users = useSelector((store) => store.users)
+    const [isLoading, setIsLoading] = useState(true)
+
     const {
         register,
         handleSubmit,
@@ -41,17 +44,22 @@ const Register = () => {
         formState: {errors, isSubmitting}
     } = useForm({resolver: zodResolver(schema)})
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
-            db.collection('users')
-                .doc(user.email)
-                .onSnapshot((snapshot) => {
-                    dispatch(setUser({...snapshot.data()}))
-                })
+            try {
+                const userDoc = await db.collection('users').doc(user.email).get();
+                const userData = userDoc.data();
+                dispatch(setUser(userData));
+                navigate("/", { replace: true });
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                // Handle the error appropriately, e.g., show a message to the user
+            }
         } else {
-            dispatch(setUser(null))
+            dispatch(setUser(null));
         }
-      });
+        if(isLoading) setIsLoading(false)
+    });
 
     const onSubmit = (data) => {
         createUserWithEmailAndPassword(auth, data.email, data.password)
@@ -65,14 +73,15 @@ const Register = () => {
     }
 
   return (
-    <>{users.userModal && 
-        <div className='w-full h-[100vh] flex items-center justify-center bg-gray-900 bg-opacity-40'>
+    <>
+    {isLoading ? <Loading /> : 
+    <div className='w-full h-[100vh] flex items-center justify-center bg-gray-900 bg-opacity-40'>
         <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 rounded-lg text-center bg-white drop-shadow-2xl'>
             <div className='text-2xl flex text-white bg-teal-900 p-3 justify-center'>
                 <p className='font-bold mr-2'>TRUCK</p>
                 <p>EAST</p>
             </div>
-      
+
             <h1 className='text-2xl m-4'>Register</h1>
 
             <div className='xs:flex-col md:flex-row flex gap-5 m-5'>
@@ -245,9 +254,9 @@ const Register = () => {
                     />
                 </div>
             </div>
-  
+
             {errors.root && <div className='text-red-500 mt-2'>{errors.root?.message}</div>}
-          
+        
             <button 
                 disabled={isSubmitting} 
                 variant='outlined'  
@@ -263,9 +272,8 @@ const Register = () => {
                 </Link>
             </div>   
         </form>
-      </div>}
+    </div>}
     </>
-    
   )
 }
 
