@@ -21,6 +21,7 @@ const AssignDialog = () => {
             if(users.currentUser.role === 'driver' && users.currentUser[type]==='') return [users.currentUser.email]
             return users.data.filter(user => user.role === 'driver' && user[type] === '').map(user => user.email)
         }
+        return []
     }
 
     useEffect(() => {

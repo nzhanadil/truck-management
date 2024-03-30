@@ -48,7 +48,7 @@ export const updateUser = createAsyncThunk(
   async ( updatedUser ) => {
     await updateDoc(doc(db, 'users', updatedUser.email), updatedUser)
 
-    const updatedDocSnapshot = await getDoc(doc(db, 'users', updateUser.email));
+    const updatedDocSnapshot = await getDoc(doc(db, 'users', updatedUser.email));
     const updatedData = updatedDocSnapshot.data();
     
     return updatedData;
@@ -101,6 +101,10 @@ export const usersSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         let index = state.data.findIndex(user => user.email === action.payload.email)
         state.data[index] = action.payload
+
+        if(action.payload.email === state.currentUser.email) {
+          state.currentUser = action.payload
+        }
       })
   }
 })

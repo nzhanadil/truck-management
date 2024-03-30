@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Header from '../layout/Header'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import DriversList from './DriversList'
 import DriverDialog from './DriverDialog'
-import { getUsers, setSearchText } from '../../store/usersSlice'
+import { setSearchText } from '../../store/usersSlice'
 
 const Drivers = () => {
-  const { searchText, data } = useSelector((store) => store.users)
-
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    dispatch(getUsers()) 
-  }, [])
+  const { searchText } = useSelector((store) => store.users)
 
   return (
     <div className='w-full'>

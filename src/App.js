@@ -1,5 +1,4 @@
 import './App.css';
-import Navbar from './components/layout/Navbar';
 import { Route, Routes } from 'react-router-dom';
 import Trucks from './components/trucks/Trucks';
 import SignIn from './components/auth/SignIn';
@@ -7,7 +6,6 @@ import Reset from './components/auth/Reset';
 import Management from './components/management/Management';
 import Drivers from './components/drivers/Drivers';
 import Register from './components/auth/Register';
-import { AssignDialog, StatusAlert, UnassignDialog } from './components/layout';
 import Layout from './components/layout/Layout';
 import RequireAuth from './components/layout/RequireAuth';
 import Dashboard from './components/dashboard/Dashboard';

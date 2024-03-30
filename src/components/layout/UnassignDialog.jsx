@@ -98,6 +98,7 @@ const UnassignDialog = () => {
                     <AddPhotoAlternateIcon className='text-8xl text-gray-600' fontSize=''/>
                 </label>
                 {error && <div className='text-red-500'>{error}</div>}
+                <div>{images.length} files selected</div>
             </div>
 
             <div className='text-center m-5 flex gap-2 justify-center'>
