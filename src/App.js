@@ -10,6 +10,7 @@ import Layout from './components/layout/Layout';
 import RequireAuth from './components/layout/RequireAuth';
 import Dashboard from './components/dashboard/Dashboard';
 import PageNotFound from './components/layout/PageNotFound';
+import Truck from './components/trucks/Truck';
 
 function App() {  
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path='/' element={<Dashboard />}/>
           <Route path='/dashboard' element={<Dashboard />}/>
           <Route path='/trucks' element={<Trucks />}/>
+          <Route path='/trucks/:id' element={<Truck />}/>
         </Route>
         <Route element={<RequireAuth allowedRoles={['manager', 'admin']}/>}>
           <Route path='/drivers' element={<Drivers />}/>

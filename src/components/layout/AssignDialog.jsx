@@ -18,7 +18,10 @@ const AssignDialog = () => {
 
     const getAvailableDrivers = (type) => {
         if(users.currentUser) {
-            if(users.currentUser.role === 'driver' && users.currentUser[type]==='') return [users.currentUser.email]
+            if(users.currentUser.role === 'driver') {
+                if(users.currentUser[type]==='') return [users.currentUser.email]
+                return []
+            } 
             return users.data.filter(user => user.role === 'driver' && user[type] === '').map(user => user.email)
         }
         return []

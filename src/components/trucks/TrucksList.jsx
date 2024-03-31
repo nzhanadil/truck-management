@@ -9,10 +9,13 @@ import { deleteTruck, openEditTruckDialog } from '../../store/trucksSlice';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
 import { openTruckAssignDialog, openTruckUnassignDialog, setAlert } from '../../store/appSlice';
+import { useNavigate } from 'react-router-dom';
 
 const TrucksList = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const {data, searchText} = useSelector((state) => state.trucks)
+  const { currentUser } = useSelector((state) => state.users)
   const [filteredData, setFilteredData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,15 +58,16 @@ const TrucksList = () => {
   };
 
   const handlePreview = () => {
-    // Implement preview logic here
-    console.log("Previewing vehicle:", selectedRow);
+    navigate(`/trucks/${selectedRow.id}`, {replace:true})
     handleClosePopover();
   };
 
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
-      if(searchText.trim().length === 0) return data
-      return data.filter(truck => (truck.id+" "+truck.make+" "+truck.model).toLowerCase().includes(searchText.trim()))
+      let trucks = data;
+      if( currentUser.role === 'driver' ) trucks = data.filter(truck => truck.status === 'active')
+      if(searchText.trim().length === 0) return trucks
+      return trucks.filter(truck => (truck.id+" "+truck.make+" "+truck.model).toLowerCase().includes(searchText.trim()))
     }
     if(data) {
       setFilteredData(getFilteredArray(data, searchText))
@@ -126,20 +130,22 @@ const TrucksList = () => {
             <p>Delete</p>
             <DeleteIcon />
           </button>
-          <button 
-            onClick={openAssign}
-            disabled={selectedRow && (selectedRow.status === 'out of service' || selectedRow.status === 'assigned')}
-            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
-          >
-            <p>Assign</p>
-            <AssignmentIndIcon />
-          </button>
-          {selectedRow && selectedRow.status === 'assigned' && 
-          <button 
+         
+          {selectedRow && selectedRow.status === 'assigned' ? 
+          <button
             onClick={openUnassign}
             className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
           >
             <p>Unassign</p>
+            <AssignmentIndIcon />
+          </button>
+          :
+          <button 
+            onClick={openAssign}
+            disabled={selectedRow && (selectedRow.status === 'out of service' || selectedRow.status === 'damaged')}
+            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
+          >
+            <p>Assign</p>
             <AssignmentIndIcon />
           </button>
           }
