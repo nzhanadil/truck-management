@@ -28,7 +28,7 @@ const Truck = () => {
                 </button>
             </header>
 
-            <div className='m-10 h-[80vh] overflow-scroll shadow-lg border-2 rounded-md'>
+            <div className='m-10 h-[80vh] overflow-scroll rounded-md'>
                 {history && history.slice(0).reverse().map(item => (
                     <Accordion
                         key={v4()}
@@ -44,12 +44,13 @@ const Truck = () => {
                       </div>
                     </AccordionSummary>
                     <AccordionDetails className='flex w-full overflow-scroll gap-2'>
-                      {item.images.map(image => (
+                      {item?.images?.map(image => (
                         <img key={v4()} src={image} className='h-52'/>
                       ))}
                     </AccordionDetails>
                   </Accordion>
                 ))}
+                {!history && <div className='text-center text-2xl font-bold'>No data...</div>}
             </div>
         </div>
     )
