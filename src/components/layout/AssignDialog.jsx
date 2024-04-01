@@ -5,6 +5,7 @@ import { closeAssignDialog, setAlert } from '../../store/appSlice'
 import { getCurrentDate } from '../../utils/HelperFunctions'
 import { updateUser } from '../../store/usersSlice'
 import { updateTruck } from '../../store/trucksSlice'
+import { updateTrailer } from '../../store/trailersSlice'
 
 const AssignDialog = () => {
     const { type, isOpen, id } = useSelector(store => store.app.assignDialog)
@@ -19,6 +20,7 @@ const AssignDialog = () => {
     const getAvailableDrivers = (type) => {
         if(users.currentUser) {
             if(users.currentUser.role === 'driver') {
+                console.log(type, '============')
                 if(users.currentUser[type]==='') return [users.currentUser.email]
                 return []
             } 
@@ -56,8 +58,7 @@ const AssignDialog = () => {
 
         dispatch(closeAssignDialog())
         dispatch(updateUser(updatedUser))
-        // type === 'truck' ? dispatch(updateTruck(updatedTransport)) : dispatch(updateTrailer(updatedTransport))
-        type === 'truck' && dispatch(updateTruck(updatedTransport))
+        type === 'truck' ? dispatch(updateTruck(updatedTransport)) : dispatch(updateTrailer(updatedTransport))
 
         const message = `${type === 'truck' ? 'Truck' : 'Trailer'} ${id} is successfully assigned to ${email}!`
         dispatch(setAlert({type: 'success', message: message}))

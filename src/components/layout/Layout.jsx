@@ -4,6 +4,7 @@ import { AssignDialog, StatusAlert, UnassignDialog } from './';
 import { useDispatch } from 'react-redux';
 import { getTrucks } from '../../store/trucksSlice';
 import { getUsers } from '../../store/usersSlice';
+import { getTrailers } from '../../store/trailersSlice';
 
 const Layout = () => {
   const dispatch = useDispatch()
@@ -11,6 +12,7 @@ const Layout = () => {
   useEffect(() => {
     dispatch(getTrucks())
     dispatch(getUsers())
+    dispatch(getTrailers())
   }, [])
 
   return (

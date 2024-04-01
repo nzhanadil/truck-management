@@ -1,5 +1,4 @@
 import React from 'react'
-import Navbar from '../layout/Navbar'
 import { Avatar } from '@mui/material'
 import { useSelector } from 'react-redux'
 import DriverDashboard from './DriverDashboard'
@@ -16,8 +15,6 @@ const Dashboard = () => {
       </header>
 
       { currentUser.role === 'driver' && <DriverDashboard />}
-      
-      <Navbar />
     </div>
   )
 }

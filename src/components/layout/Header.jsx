@@ -4,13 +4,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import SortIcon from '@mui/icons-material/Sort';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Header = ({title, searchText, setSearchText, openDialog}) => {
   const dispatch = useDispatch()
+  const { currentUser } = useSelector(store => store.users)
 
   return (
-    <div className='p-6 bg-teal-900 flex pl-10 justify-between items-center h-[10vh]'>
+    <div className='p-6 bg-teal-900 flex pl-10 justify-between items-center h-[10vh] w-full'>
       <h1 className='font-bold text-2xl text-white mx-5'>{title}</h1>
 
       <div className='flex'>
@@ -31,7 +32,10 @@ const Header = ({title, searchText, setSearchText, openDialog}) => {
           </IconButton>}
         </div>
 
-        <IconButton onClick={() => dispatch(openDialog())}>
+        <IconButton
+          disabled={currentUser?.role === 'driver'} 
+          onClick={() => dispatch(openDialog())}
+        >
           <AddCircleIcon className='text-white text-2xl ml-3'/>
         </IconButton>
 

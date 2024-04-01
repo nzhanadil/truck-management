@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, Link, useNavigate } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -67,7 +67,7 @@ const Navbar = () => {
           </div>
 
           <div className='flex flex-col text-teal-900 text-lg p-3 gap-3'>
-            {permissions[currentUser?.role].map((menuOption, index) => (
+            {currentUser && permissions[currentUser?.role].map((menuOption, index) => (
               <Link 
                 key={menuOption}
                 to={`/${menuOption.toLowerCase()}`}

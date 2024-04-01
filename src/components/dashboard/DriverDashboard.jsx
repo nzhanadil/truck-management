@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { openTruckUnassignDialog } from '../../store/appSlice'
+import { openTrailerUnassignDialog, openTruckUnassignDialog } from '../../store/appSlice'
 
 const DriverDashboard = () => {
     const { currentUser } = useSelector(store => store.users)
@@ -12,7 +12,7 @@ const DriverDashboard = () => {
     }
 
     const handleTrailer = () => {
-        // TODO
+        if(trailer) dispatch(openTrailerUnassignDialog(trailer))
     }
   return (
     <div className='flex'>

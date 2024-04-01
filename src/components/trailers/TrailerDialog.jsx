@@ -8,17 +8,16 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import PinIcon from '@mui/icons-material/Pin';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import {zodResolver} from '@hookform/resolvers/zod'
 import {z} from 'zod'
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../store/appSlice';
-import { addTruck, closeTruckDialog, updateTruck } from '../../store/trucksSlice';
+import { addTrailer, closeTrailerDialog, updateTrailer } from '../../store/trailersSlice';
 
 const schema = z.object({
-    id: z.string().min(2, "Please enter truck id"),
+    id: z.string().min(2, "Please enter trailer id"),
     make: z.string().min(2, "Please enter make"),
-    model: z.string().min(2, "Please enter model"),
+    model: z.string().min(2, "Please select model"),
     vin: z.string().min(6, "Please enter VIN"),
     status: z.string().min(1, "Please select status"),
     mileage: z.string().min(1, "Please enter mileage"),
@@ -39,9 +38,9 @@ const defaultValues = {
     plate_number: '',
   };
 
-const TruckDialog = () => {
+const TrailerDialog = () => {
     const dispatch = useDispatch()
-    const {isOpen, type, data} = useSelector((store) => store.trucks.truckDialog)
+    const {isOpen, type, data} = useSelector((store) => store.trailers.trailerDialog)
 
     const initDialog = () => {
         if (type === 'edit' && data) {
@@ -71,18 +70,18 @@ const TruckDialog = () => {
     const onSubmit = (data) => {
         let message;
         if(type === 'new') {
-            const res = dispatch(addTruck(data))
+            const res = dispatch(addTrailer(data))
             if(res.payload === 'failed') {
                 setError('id', {message: 'This id is already taken!'})
                 setTimeout(() => {setError("id", {message: ""})},1500)
             } else {
-                message = 'Truck '+ data.id + ' created successfully!'
+                message = 'Trailer '+ data.id + ' created successfully!'
             }
         } else {
-            dispatch(updateTruck(data))
-            message = 'Truck '+ data.id + ' updated successfully!'
+            dispatch(updateTrailer(data))
+            message = 'Trailer '+ data.id + ' updated successfully!'
         }
-        dispatch(closeTruckDialog())
+        dispatch(closeTrailerDialog())
         dispatch(setAlert({type:'success', message: message}))
     }
 
@@ -91,7 +90,7 @@ const TruckDialog = () => {
         <div className='fixed top-0 right-0 rounded-lg z-10 w-full h-[100vh] flex justify-center items-center bg-gray-900 bg-opacity-40'>
         <form  onSubmit={handleSubmit(onSubmit)} className='border-2 border-teal-900 rounded-lg text-center bg-white drop-shadow-2xl'>
           <div className='text-2xl text-white bg-teal-900 py-3'>
-                <p className='mr-2'>{type === 'new' ? 'Create' : 'Edit'} Truck</p>
+                <p className='mr-2'>{type === 'new' ? 'Create' : 'Edit'} Trailer</p>
           </div>
         
           <div className='xs:flex-col md:flex-row flex p-5 pb-0 gap-5'>
@@ -104,7 +103,7 @@ const TruckDialog = () => {
                         {...register('id')}
                         className="mb-2 w-64"
                         type="text"
-                        label="Truck ID"
+                        label="Trailer ID"
                         error={!!errors.id}
                         helperText={errors?.id?.message}
                         InputProps={{
@@ -143,29 +142,27 @@ const TruckDialog = () => {
                         />
                     )}
                 />
-                <Controller
-                    name="model"
-                    control={control}
-                    render={({ field }) => (
-                        <TextField
-                        {...register('model')}
-                        className="mb-2 w-64"
-                        type="text"
-                        label="Model"
-                        error={!!errors.model}
-                        helperText={errors?.model?.message}
-                        InputProps={{
-                            endAdornment: (
-                            <InputAdornment position="end">
-                                <ModelTrainingIcon className='m-2'/>
-                            </InputAdornment>
-                            )
-                        }}
-                        variant="outlined"
-                        required
-                        />
-                    )}
-                />
+                <FormControl>
+                    <InputLabel id="model_label">Model</InputLabel>
+                    <Controller
+                        name="model"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                labelId="model_label"
+                                label="Model"
+                                {...field}
+                            >
+                                <MenuItem value="flatbed">Flatbed</MenuItem>
+                                <MenuItem value="lowboy">Lowboy</MenuItem>
+                                <MenuItem value="step deck">Step Deck</MenuItem>
+                                <MenuItem value="double drop">Double Drop</MenuItem>
+                                <MenuItem value="conestoga">Conestoga</MenuItem>
+                                <MenuItem value="side kit">Side Kit</MenuItem>
+                            </Select>
+                        )}
+                    />
+                </FormControl>
                 <Controller
                     name="vin"
                     control={control}
@@ -316,7 +313,7 @@ const TruckDialog = () => {
                 {type === 'new' ? 'Create' : 'Update'}
               </button>
               <button
-                    onClick={() => dispatch(closeTruckDialog())}
+                    onClick={() => dispatch(closeTrailerDialog())}
                     className='border-2 text-teal-900 border-teal-900  w-full py-2 rounded-lg hover:bg-teal-700 hover:border-teal-700 hover:text-white'
               >
                   Cancel
@@ -329,4 +326,4 @@ const TruckDialog = () => {
   )
 }
 
-export default TruckDialog
+export default TrailerDialog

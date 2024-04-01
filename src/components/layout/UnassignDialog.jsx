@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeUnassignDialog, setAlert } from '../../store/appSlice';
 import { updateUser } from '../../store/usersSlice';
 import { updateTruck } from '../../store/trucksSlice';
+import { updateTrailer } from '../../store/trailersSlice';
 
 const UnassignDialog = () => {
     const { type, isOpen, id } = useSelector(store => store.app.unassignDialog)
@@ -51,9 +52,8 @@ const UnassignDialog = () => {
         updatedUser[type === 'truck' ? 'trucksHistory' : 'trailersHistory'] = userHistory
 
         dispatch(updateUser(updatedUser))
-        // type === 'truck' ? dispatch(updateTruck(updatedTransport)) : dispatch(updateTrailer(updatedTransport))
-        const clone = JSON.parse(JSON.stringify(updatedTransport));
-        type === 'truck' && dispatch(updateTruck(clone))
+        
+        type === 'truck' ? dispatch(updateTruck(updatedTransport)) : dispatch(updateTrailer(updatedTransport))
 
         const message = `${type === 'truck' ? 'Truck' : 'Trailer'} ${id} is successfully unassigned from ${email}!`
         dispatch(setAlert({type: 'success', message: message}))

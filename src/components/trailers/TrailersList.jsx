@@ -5,16 +5,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { deleteTruck, openEditTruckDialog } from '../../store/trucksSlice';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
-import { openTruckAssignDialog, openTruckUnassignDialog, setAlert } from '../../store/appSlice';
+import { openTrailerAssignDialog, openTrailerUnassignDialog, setAlert } from '../../store/appSlice';
 import { useNavigate } from 'react-router-dom';
+import { deleteTrailer, openEditTrailerDialog } from '../../store/trailersSlice';
 
-const TrucksList = () => {
+const TrailersList = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const {data, searchText} = useSelector((state) => state.trucks)
+  const {data, searchText} = useSelector((state) => state.trailers)
   const { currentUser } = useSelector((state) => state.users)
   const [filteredData, setFilteredData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
@@ -31,8 +31,8 @@ const TrucksList = () => {
   const handleDelete = (response) => {
     setConfirmationMessage('')
     if(response) {
-      dispatch(deleteTruck(selectedRow.id))
-      const message = 'Truck '+selectedRow.id+' is successfully deleted!'
+      dispatch(deleteTrailer(selectedRow.id))
+      const message = 'Trailer '+selectedRow.id+' is successfully deleted!'
       dispatch(setAlert({type: 'success', message: message}))
     }
   }
@@ -43,31 +43,31 @@ const TrucksList = () => {
   };
 
   const handleEdit = () => {
-    dispatch(openEditTruckDialog(selectedRow))
+    dispatch(openEditTrailerDialog(selectedRow))
     handleClosePopover();
   };
 
   const openAssign = () => {
-    dispatch(openTruckAssignDialog(selectedRow.id))
+    dispatch(openTrailerAssignDialog(selectedRow.id))
     handleClosePopover();
   };
 
   const openUnassign = () => {
-    dispatch(openTruckUnassignDialog(selectedRow.id))
+    dispatch(openTrailerUnassignDialog(selectedRow.id))
     handleClosePopover();
   };
 
   const handlePreview = () => {
-    navigate(`/trucks/${selectedRow.id}`, {replace:true})
+    navigate(`/trailers/${selectedRow.id}`, {replace:true})
     handleClosePopover();
   };
 
   useEffect(() => {
     const getFilteredArray = (data, searchText) => {
-      let trucks = data;
-      if( currentUser.role === 'driver' ) trucks = data.filter(truck => truck.status === 'active')
-      if(searchText.trim().length === 0) return trucks
-      return trucks.filter(truck => (truck.id+" "+truck.make+" "+truck.model).toLowerCase().includes(searchText.trim()))
+      let trailers = data;
+      if( currentUser.role === 'driver' ) trailers = data.filter(truck => truck.status === 'active')
+      if(searchText.trim().length === 0) return trailers
+      return trailers.filter(trailer => (trailer.id+" "+trailer.make+" "+trailer.model).toLowerCase().includes(searchText.trim()))
     }
     if(data) {
       setFilteredData(getFilteredArray(data, searchText))
@@ -164,4 +164,4 @@ const TrucksList = () => {
   )
 }
 
-export default TrucksList
+export default TrailersList
