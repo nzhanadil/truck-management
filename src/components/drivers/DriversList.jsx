@@ -7,9 +7,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { Popover } from '@mui/material';
 import ConfirmationPopup from '../layout/ConfirmationPopup';
+import { useNavigate } from 'react-router-dom';
 
 const DriversList = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const {data, searchText} = useSelector((state) => state.users)
   const [filteredData, setFilteredData] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
@@ -48,8 +50,7 @@ const DriversList = () => {
   };
 
   const handlePreview = () => {
-    // Implement preview logic here
-    console.log("Previewing vehicle:", selectedRow);
+    navigate(`/drivers/${selectedRow.email}/`, {replace:true})
     handleClosePopover();
   };
 

@@ -25,12 +25,16 @@ const Navbar = () => {
   }, [])
 
   useEffect(() => {
+    let path = pathname.split("/")[1]
+    setActiveMenu(path === '' ? 'dashboard' : path)
+  }, [pathname])
+
+  useEffect(() => {
     if(screenSize <= 767) setIsOpen(false)
     else setIsOpen(true)
   }, [screenSize])
 
-  const handleClick = (menuOption) => {
-    setActiveMenu(menuOption === '' ? 'dashboard' : menuOption.toLowerCase())
+  const handleClick = () => {
     if(screenSize<=767) setIsOpen(false)
   }
 
@@ -56,7 +60,7 @@ const Navbar = () => {
       <div className='xs:w-[100vw] md:w-64 relative border-2 border-teal-900 h-[100vh] flex flex-col justify-between'>
         <div>
           <div className='relative text-white bg-teal-900 p-3 w-full flex justify-between'>
-            <Link to="/" className='text-2xl' onClick={() => handleClick('')}>
+            <Link to="/" className='text-2xl' onClick={handleClick}>
               <span className=' border-2 border-white px-1'>Truck</span>
               <span className='bg-white px-1 text-teal-900 font-bold py-0.5'>East</span>
             </Link>
@@ -72,7 +76,7 @@ const Navbar = () => {
                 key={menuOption}
                 to={`/${menuOption.toLowerCase()}`}
                 className={`${activeMenu===menuOption.toLowerCase() && 'bg-teal-900 text-white'} px-4 py-2 hover:bg-teal-700 hover:text-white hover:duration-150 rounded-lg`}
-                onClick={() => handleClick(menuOption)}
+                onClick={handleClick}
               >
                 {/* Icons for each menu */}
                 {menuOption}

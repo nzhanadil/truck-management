@@ -4,7 +4,6 @@ import Trucks from './components/trucks/Trucks';
 import SignIn from './components/auth/SignIn';
 import Reset from './components/auth/Reset';
 import Management from './components/management/Management';
-import Drivers from './components/drivers/Drivers';
 import Register from './components/auth/Register';
 import Layout from './components/layout/Layout';
 import RequireAuth from './components/layout/RequireAuth';
@@ -13,6 +12,7 @@ import PageNotFound from './components/layout/PageNotFound';
 import Truck from './components/trucks/Truck';
 import Trailers from './components/trailers/Trailers';
 import Trailer from './components/trailers/Trailer';
+import { Driver, Drivers } from './components/drivers';
 
 function App() {  
   return (
@@ -34,6 +34,7 @@ function App() {
         </Route>
         <Route element={<RequireAuth allowedRoles={['manager', 'admin']}/>}>
           <Route path='/drivers' element={<Drivers />}/>
+          <Route path='/drivers/:email' element={<Driver />}/>
         </Route>
         <Route element={<RequireAuth allowedRoles={['admin']}/>}>
           <Route path='/management' element={<Management />}/>

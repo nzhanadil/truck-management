@@ -40,7 +40,12 @@ const Trailer = () => {
                     >
                       <div className='flex justify-between w-full xs:px-2 md:px-10'>
                         <p className='text-lg font-bold'>{`${item.startDate.replaceAll('-', '/')} - ${item.endDate.replaceAll('-', '/')}`}</p>
-                        <p className='text-lg'>{item.user}</p>
+                        <p 
+                          className='text-lg underline italic'
+                          onClick={() => navigate(`/drivers/${item.user}/`)}
+                        >
+                          {item.user}
+                        </p>
                       </div>
                     </AccordionSummary>
                     <AccordionDetails className='flex w-full overflow-scroll gap-2'>
