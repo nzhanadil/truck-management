@@ -116,20 +116,31 @@ const TrucksList = () => {
         }}
       >
         <div className='flex flex-col gap-3 p-5 w-44'>
-          <button 
-            onClick={handleEdit}
-            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
-          >
-            <p>Edit</p>
-            <EditIcon />
-          </button>
-          <button 
-            onClick={openConfirmation}
-            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
-          >
-            <p>Delete</p>
-            <DeleteIcon />
-          </button>
+          { currentUser.role !== 'driver' &&
+            <>
+              <button 
+                onClick={handleEdit}
+                className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
+              >
+                <p>Edit</p>
+                <EditIcon />
+              </button>
+              <button 
+                onClick={openConfirmation}
+                className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
+              >
+                <p>Delete</p>
+                <DeleteIcon />
+              </button>
+              <button
+                onClick={handlePreview}
+                className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
+              >
+                <p>Preview</p>
+                <VisibilityIcon />
+              </button>
+            </>
+            }
          
           {selectedRow && selectedRow.status === 'assigned' ? 
           <button
@@ -149,13 +160,6 @@ const TrucksList = () => {
             <AssignmentIndIcon />
           </button>
           }
-          <button
-            onClick={handlePreview}
-            className='flex justify-between py-2 px-3 hover:bg-gray-400 rounded-sm bg-gray-200 disabled:text-gray-500 disabled:hover:bg-gray-200'
-          >
-            <p>Preview</p>
-            <VisibilityIcon />
-          </button>
         </div>
       </Popover>
 

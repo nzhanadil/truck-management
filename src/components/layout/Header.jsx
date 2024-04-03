@@ -3,7 +3,6 @@ import {IconButton, Input } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CloseIcon from '@mui/icons-material/Close';
-import SortIcon from '@mui/icons-material/Sort';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Header = ({title, searchText, setSearchText, openDialog}) => {
@@ -37,10 +36,6 @@ const Header = ({title, searchText, setSearchText, openDialog}) => {
           onClick={() => dispatch(openDialog())}
         >
           <AddCircleIcon className='text-white text-2xl ml-3'/>
-        </IconButton>
-
-        <IconButton>
-          <SortIcon className='text-white text-2xl'/>
         </IconButton>
       </div>
       
