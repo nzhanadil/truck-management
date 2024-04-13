@@ -10,7 +10,7 @@ const Drivers = () => {
 
   return (
     <div className='w-full'>
-       <Header title="Drivers" setSearchText={setSearchText} searchText={searchText} />
+       <Header title="Drivers" setSearchText={setSearchText} searchText={searchText}/>
        <DriversList />
        <DriverDialog />
     </div>

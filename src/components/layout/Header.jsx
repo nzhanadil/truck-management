@@ -32,7 +32,7 @@ const Header = ({title, searchText, setSearchText, openDialog}) => {
         </div>
 
         <IconButton
-          disabled={currentUser?.role === 'driver'} 
+          disabled={currentUser?.role === 'driver' || !openDialog} 
           onClick={() => dispatch(openDialog())}
         >
           <AddCircleIcon className='text-white text-2xl ml-3'/>
